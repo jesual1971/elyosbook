@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oráculo de Elyos - Iniciar Sesión</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #c9a7f5; /* Fondo violeta total */
+    }
+
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-card {
+      display: flex;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      max-width: 900px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .login-info {
+      flex: 1;
+      background-color: #a287f4;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .login-info img {
+      width: 120px;
+      margin-bottom: 20px;
+    }
+
+    .login-info h1 {
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    .login-info p {
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .login-form {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background-color: white;
+      color: #d4af37; /* Texto en dorado */
+    }
+
+    .login-form h2 {
+      text-align: center;
+      color: #d4af37;
+    }
+
+    .login-form input {
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .login-form button {
+      background-color: #d4af37;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .login-form button:hover {
+      background-color: #c19e2d;
+    }
+
+    .login-form a {
+      color: #d4af37;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .login-form a:hover {
+      text-decoration: underline;
+    }
+    
+     .login-form p {
+    color: black; /* "¿No tienes cuenta?" en negro */
+    text-align: center;
+    margin-top: 10px;
+  }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-info">
+        <img src="img/logo.png" alt="Logo Oráculo Elyos">
+        <h1>Libro de Elyos</h1>
+        <p>
+          Bienvenido, viajero de la verdad. Has llegado al Oráculo de Elyos, donde la sabiduría eterna aguarda por aquellos que buscan con el corazón sincero.
+          Abre tu mente, pregunta con intención, y las respuestas llegarán a ti como ecos del universo.
+          La luz del conocimiento te guiará en tu camino.
+        </p>
+      </div>
+      <div class="login-form">
+        <h2>Iniciar Sesión</h2>
+        <input type="text" placeholder="Usuario">
+        <input type="password" placeholder="Contraseña">
+        <button>Ingresar</button>
+        <p>¿No tienes cuenta? <a href="registro.html">Crea una cuenta</a></p>
+      </div>
+    </div>
+  </div>
+  <script>
+  document.querySelector("button").addEventListener("click", async () => {
+    const inputs = document.querySelectorAll(".login-form input");
+    const usuario = inputs[0].value.trim();
+    const password = inputs[1].value.trim();
+
+    if (!usuario || !password) {
+      alert("Por favor, completa todos los campos.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usuario, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("usuario", usuario);
+        window.location.href = "oraculo.html"; // o el destino correcto
+      } else {
+        alert(data.mensaje || "Error al iniciar sesión");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Ocurrió un error al conectar con el servidor.");
+    }
+  });
+</script>
+</body>
+</html>

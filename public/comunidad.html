@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comunidad Elyos</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f1f5fa;
+    }
+
+    .nav-bar {
+      background-color: #1c2d44;
+      padding: 12px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .nav-bar a {
+      color: #f1c40f;
+      text-decoration: none;
+      margin: 0 18px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .comunidad-container {
+      max-width: 800px;
+      margin: 100px auto 40px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    .comunidad-container h2 {
+      color: #18335f;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .publicar textarea {
+      width: 100%;
+      height: 100px;
+      resize: vertical;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .publicar button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #003f8a;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .publicar button:hover {
+      background-color: #002f6c;
+    }
+
+    .publicaciones {
+      margin-top: 30px;
+    }
+
+    .post {
+      background-color: #f0f6ff;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #d0e3ff;
+      margin-bottom: 15px;
+    }
+
+    .post strong {
+      color: #003f8a;
+    }
+
+    .post small {
+      display: block;
+      color: #888;
+      margin-top: 5px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-bar">
+    <a href="chat.html">Chat Comunal</a>
+    <a href="amigos.html">Amigos</a>
+    <a href="introduccion.html">Leer Libro</a>
+    <a href="oraculo.html">Libro de Elyos</a>
+    <a href="perfil-usuario.html">Perfil</a>
+    <a href="#" onclick="cerrarSesion()">Cerrar Sesión</a>
+  </div>
+
+  <div class="comunidad-container">
+    <h2>Comunidad Elyos</h2>
+
+    <div class="publicar">
+      <h3 id="nombreUsuario" style="font-weight: bold; color: #003f8a;"></h3>
+      <textarea id="mensaje" placeholder="Comparte tu experiencia, haz una pregunta, deja un testimonio..."></textarea>
+      <button id="publicarBtn">Publicar</button>
+    </div>
+
+    <div class="publicaciones" id="publicaciones">
+      <!-- Aquí se insertarán los mensajes -->
+    </div>
+  </div>
+
+  <script>
+    let paginaActual = 1;
+  const limitePorPagina = 5;
+  let cargando = false;
+    document.addEventListener("DOMContentLoaded", () => {
+      const usuario = localStorage.getItem("usuario") || "Anónimo";
+      document.getElementById("nombreUsuario").innerText = "Publicando como: " + usuario;
+
+      const btn = document.getElementById("publicarBtn");
+      const input = document.getElementById("mensaje");
+      const publicacionesDiv = document.getElementById("publicaciones");
+      cargarPublicaciones();
+
+      // Publicar nuevo mensaje
+      btn.addEventListener("click", async () => {
+        const contenido = input.value.trim();
+        if (!contenido) {
+          alert("Escribe algo antes de publicar.");
+          return;
+        }
+
+        try {
+          await fetch("/api/comunidad", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ autor: usuario, contenido })
+          });
+
+          input.value = "";
+          paginaActual = 1;
+          document.getElementById("publicaciones").innerHTML = "";
+          await cargarPublicaciones(); // Volver a cargar todo desde el inicio
+        } catch (error) {
+          console.error("Error al publicar:", error);
+          alert("Ocurrió un error al publicar.");
+        }
+      });
+
+      // Cargar publicaciones existentes
+      async function cargarPublicaciones() {
+  if (cargando) return;
+  cargando = true;
+
+  try {
+    const res = await fetch(`/api/comunidad?pagina=${paginaActual}&limite=${limitePorPagina}`);
+    const posts = await res.json();
+
+    if (posts.length === 0) {
+      window.removeEventListener("scroll", detectarScroll);
+      return;
+    }
+
+    posts.forEach(post => {
+      const div = document.createElement("div");
+      div.classList.add("post");
+      div.style.marginBottom = "30px";
+
+      div.innerHTML = `
+        <div style="display: flex; gap: 10px; align-items: flex-start;">
+          <img src="${post.avatar}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+          <div>
+            <strong>${post.autor}</strong>
+            <p>${post.contenido}</p>
+            <small>${new Date(post.fecha).toLocaleString()}</small>
+          </div>
+        </div>
+
+        <div style="margin-top: 8px;">
+          <button onclick="darLike('${post._id}')" style="background-color: transparent; border: none; color: #003f8a; font-weight: bold; cursor: pointer;">
+            ❤️ Me gusta (<span id="likes-${post._id}">${post.likes}</span>)
+          </button>
+        </div>
+
+        <div class="comentarios" id="comentarios-${post._id}" style="margin-top: 10px;"></div>
+
+        <div style="margin-top: 10px;">
+          <input type="text" id="comentarioInput-${post._id}" placeholder="Escribe un comentario..." style="width: 70%; padding: 5px;">
+          <button onclick="publicarComentario('${post._id}')" style="padding: 5px 10px;">Comentar</button>
+        </div>
+      `;
+
+      document.getElementById("publicaciones").appendChild(div);
+      cargarComentarios(post._id);
+    });
+
+    paginaActual++; // próxima página
+  } catch (error) {
+    console.error("Error al cargar publicaciones:", error);
+  } finally {
+    cargando = false;
+  }
+}
+
+      cargarPublicaciones();
+    });
+
+    function cerrarSesion() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.href = "index.html";
+    }
+  async function cargarComentarios(postId) {
+  const comentariosDiv = document.getElementById(`comentarios-${postId}`);
+  comentariosDiv.innerHTML = "";
+
+  try {
+    const res = await fetch(`/api/comentarios/${postId}`);
+    const comentarios = await res.json();
+
+    comentarios.forEach(c => {
+      const p = document.createElement("p");
+      p.innerHTML = `<strong>${c.usuario}:</strong> ${c.contenido}`;
+      comentariosDiv.appendChild(p);
+    });
+  } catch (error) {
+    console.error("Error cargando comentarios:", error);
+  }
+}
+
+async function publicarComentario(postId) {
+  const input = document.getElementById(`comentarioInput-${postId}`);
+  const contenido = input.value.trim();
+  const usuario = localStorage.getItem("usuario") || "Anónimo";
+
+  if (!contenido) return;
+
+  try {
+    await fetch("/api/comentarios", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ postId, usuario, contenido })
+    });
+
+    input.value = "";
+    cargarComentarios(postId);
+  } catch (error) {
+    console.error("Error al publicar comentario:", error);
+  }
+}
+  </script>
+
+  <script>
+  async function darLike(postId) {
+      try {
+        const res = await fetch(`/api/comunidad/${postId}/like`, {
+          method: "POST"
+        });
+
+        const data = await res.json();
+        const likeSpan = document.getElementById(`likes-${postId}`);
+        likeSpan.innerText = data.likes;
+      } catch (error) {
+        console.error("Error al dar like:", error);
+      }
+    }
+
+    function detectarScroll() {
+      const scrollPos = window.scrollY + window.innerHeight;
+      const scrollTotal = document.body.scrollHeight;
+      if (scrollPos >= scrollTotal - 50) {
+        cargarPublicaciones();
+      }
+    }
+
+    window.addEventListener("scroll", detectarScroll);
+</script>
+</body>
+</html>
+

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Creación - Luz de la Verdad</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1c1c2b;
+      color: white;
+    }
+
+    .nav-bar {
+      background-color: #1c2d44;
+      padding: 12px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .nav-bar a {
+      color: #f1c40f;
+      text-decoration: none;
+      margin: 0 18px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 100px auto 40px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #f1c40f;
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 20px;
+      color: white;
+      font-weight: normal;
+      margin-bottom: 40px;
+    }
+
+    .botones-libro {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      padding: 0 20px;
+    }
+
+    .botones-libro a {
+      display: block;
+      background-color: #2e3b55;
+      color: white;
+      text-decoration: none;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+    }
+
+    .botones-libro a:hover {
+      background-color: #3f5378;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+    }
+
+    .destacado {
+      background-color: #f1c40f;
+      color: #1c1c2b;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-bar">
+    <a href="chat.html">Chat Comunal</a>
+    <a href="oraculo.html">Libro de Elyos</a>
+    <a href="amigos.html">Amigos</a>
+    <a href="comunidad.html">Comunidad</a>
+    <a href="perfil-usuario.html">Perfil</a>
+    <a href="#" onclick="cerrarSesion()">Cerrar Sesión</a>
+  </div>
+
+  <div class="container">
+    <h1>La Creación Luz de la Verdad</h1>
+    <h2 style="margin-top: 30px; color: white;">UNA VERDAD ESCONDIDA</h2>
+<p style="color: #ddd; font-size: 16px; max-width: 800px; margin: 10px auto 30px; text-align: center; line-height: 1.6;">
+  Has vivido toda tu vida creyendo que la historia que te enseñaron era la verdadera. Te dijeron quién eres, de dónde vienes y cuál es tu propósito en este mundo. Pero, ¿y si todo lo que creías saber no es más que una sombra de la verdad?
+</p>
+<p style="color: #ddd; font-size: 16px; max-width: 800px; margin: 0 auto 20px; text-align: center; line-height: 1.6;">
+  Este libro no es solo un relato; es una llave. Una llave que abrirá las puertas de un conocimiento que ha sido deliberadamente ocultado. Aquí conocerás el verdadero origen de nuestra especie, la historia de nuestros creadores y la razón por la cual, nos han mantenido en la oscuridad.
+</p>
+<p style="color: #ddd; font-size: 16px; max-width: 800px; margin: 0 auto 20px; text-align: center; line-height: 1.6;">
+  No será una lectura cómoda. La verdad nunca lo es. Pero si tienes el valor de seguir adelante, descubrirás que el mundo en el que vives es solo una fracción de lo que realmente existe.
+</p>
+<p style="color: #d4af37; font-size: 18px; font-weight: bold; text-align: center; margin-top: 20px;">
+  La pregunta es: ¿Estás listo para ver más allá del velo?
+</p>
+
+    <div class="botones-libro">
+  <a href="prologo.html" class="boton-grande">📖 Comenzar Prólogo</a>
+  <a href="capitulo1.html" class="boton">Capítulo 1</a>
+  <a href="capitulo2.html" class="boton">Capítulo 2</a>
+  <a href="capitulo3.html" class="boton">Capítulo 3</a>
+  <a href="capitulo4.html" class="boton">Capítulo 4</a>
+  <a href="capitulo5.html" class="boton">Capítulo 5</a>
+  <a href="capitulo6.html" class="boton">Capítulo 6</a>
+  <a href="capitulo7.html" class="boton">Capítulo 7</a>
+  <a href="capitulo8.html" class="boton">Capítulo 8</a>
+  <a href="capitulo9.html" class="boton">Capítulo 9</a>
+  <a href="capitulo10.html" class="boton">Capítulo 10</a>
+  <a href="epilogo.html" class="boton">Epílogo</a>
+</div>
+  </div>
+
+  <script>
+    function cerrarSesion() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
+

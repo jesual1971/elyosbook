@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Libro de Elyos</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      margin: 0;
+      background-color: #e7f0ff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .nav-bar {
+      background-color: #1c2d44;
+      padding: 12px 0;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .nav-bar a {
+      color: #f1c40f;
+      text-decoration: none;
+      margin: 0 18px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .nav-bar a:hover {
+      text-decoration: underline;
+    }
+
+    .oraculo-container {
+      margin-top: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .oraculo-logo {
+      width: 100px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      color: #18335f;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .oraculo-bienvenida {
+      max-width: 600px;
+      margin-bottom: 30px;
+      color: #2c3e50;
+    }
+
+    .oraculo-pregunta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    #pregunta {
+      padding: 10px;
+      width: 280px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    #preguntarBtn {
+      background-color: #003f8a;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #preguntarBtn:hover {
+      background-color: #002f6c;
+    }
+
+    #respuesta {
+      font-style: italic;
+      color: #2c3e50;
+      margin-top: 10px;
+    }
+
+    .oculto {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<header style="background-color: #1c2d44; padding: 12px 20px; display: flex; justify-content: flex-end; align-items: center; position: fixed; top: 0; width: 100%; z-index: 999;">
+  <button onclick="toggleMenu()" style="background-color: #003f8a; color: white; font-weight: bold; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; margin-right: 50px;">
+    ☰ Menú
+  </button>
+  <div id="menuOpciones" class="oculto" style="position: absolute; top: 55px; right: 20px; background-color: white; border: 1px solid #ccc; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); width: 180px;">
+    <a href="chat.html" style="display: block; padding: 10px; text-decoration: none; color: #1c2d44;">Chat Comunal</a>
+    <a href="perfil-usuario.html" style="display: block; padding: 10px; text-decoration: none; color: #1c2d44;">Perfil</a>
+    <a href="introduccion.html" style="display: block; padding: 10px; text-decoration: none; color: #1c2d44;">Leer Libro</a>
+    <a href="amigos.html" style="display: block; padding: 10px; text-decoration: none; color: #1c2d44;">Amigos</a>
+    <a href="comunidad.html" style="display: block; padding: 10px; text-decoration: none; color: #1c2d44;">Comunidad</a>
+    <a href="#" onclick="cerrarSesion()" style="display: block; padding: 10px; text-decoration: none; color: #c0392b;">Cerrar Sesión</a>
+  </div>
+</header>
+
+<div class="oraculo-container">
+  <img src="img/logo.png" alt="Logo Oráculo Elyos" class="oraculo-logo">
+
+  <h1>Bienvenidos al Libro de Elyos</h1>
+  <p class="oraculo-bienvenida">
+    Bienvenido, viajero. Pregunta lo que tu corazón necesite saber y el Oráculo responderá con sabiduría.
+  </p>
+
+  <div class="oraculo-pregunta">
+    <input type="text" id="pregunta" placeholder="Escribe tu pregunta aquí...">
+    <button id="preguntarBtn">Preguntar</button>
+  </div>
+
+  <div id="respuesta">Tus palabras invocarán respuestas...</div>
+</div>
+
+<script>
+  function cerrarSesion() {
+    localStorage.removeItem("token");
+    window.location.href = "index.html";
+  }
+
+  function toggleMenu() {
+    document.getElementById("menuOpciones").classList.toggle("oculto");
+  }
+
+  document.addEventListener("click", function (event) {
+    const menu = document.getElementById("menuOpciones");
+    const button = event.target.closest("button");
+    if (!menu.contains(event.target) && !button) {
+      menu.classList.add("oculto");
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("preguntarBtn");
+    const input = document.getElementById("pregunta");
+    const respuestaDiv = document.getElementById("respuesta");
+
+    btn.addEventListener("click", async () => {
+      const pregunta = input.value.trim();
+      if (!pregunta) {
+        respuestaDiv.innerText = "⚠️ Escribe una pregunta primero.";
+        return;
+      }
+
+      respuestaDiv.innerText = "⏳ Consultando al Oráculo de Elyos...";
+
+      try {
+        const res = await fetch("/preguntar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pregunta })
+        });
+
+        const data = await res.json();
+        respuestaDiv.innerText = data.respuesta;
+      } catch (error) {
+        console.error("Error:", error);
+        respuestaDiv.innerText = "❌ Error al contactar con Elyos IA.";
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
+

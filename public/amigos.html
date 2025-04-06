@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Amigos</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      background-color: #0e1a2b;
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav.navbar {
+      background-color: #1c2d44;
+      padding: 12px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    nav.navbar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    nav.navbar a {
+      color: #f1c40f;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 100px auto;
+      padding: 20px;
+    }
+
+    .search-box input {
+      width: 70%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+    }
+
+    .search-box button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #f1c40f;
+      color: #0e1a2b;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #162a47;
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .user-card img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 10px;
+    }
+
+    .user-info {
+      flex: 1;
+      text-align: left;
+    }
+
+    .user-actions button {
+      background-color: #f1c40f;
+      color: #0e1a2b;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-left: 5px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <ul>
+      <li><a href="chat.html">Chat Comunal</a></li>
+      <li><a href="introduccion.html">Leer Libro</a></li>
+      <li><a href="oraculo.html">Libro de Elyos</a></li>
+      <li><a href="comunidad.html">Comunidad</a></li>
+      <li><a href="perfil-usuario.html">Perfil</a></li>
+      <li><a href="#" onclick="cerrarSesion()">Cerrar Sesión</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div class="search-box">
+      <input type="text" id="busqueda" placeholder="Buscar amigo por nombre...">
+      <button onclick="buscarAmigos()">Buscar</button>
+    </div>
+
+    <h2>Amigos actuales</h2>
+    <div id="lista-amigos"></div>
+
+    <h2>Resultados de búsqueda</h2>
+    <div id="resultados-busqueda"></div>
+  </div>
+
+  <script>
+    const usuario = localStorage.getItem("usuario");
+
+    function cerrarSesion() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.href = "index.html";
+    }
+
+    function iniciarChatPrivado(destinatario) {
+      window.location.href = `chat-privado.html?usuario=${encodeURIComponent(destinatario)}`;
+    }
+
+    async function cargarAmigos() {
+      try {
+        const res = await fetch(`/api/usuarios/${usuario}/amigos`);
+        const amigos = await res.json();
+
+        const contenedor = document.getElementById("lista-amigos");
+        contenedor.innerHTML = "";
+
+        amigos.forEach(amigo => {
+          const card = crearTarjetaUsuario(amigo, true);
+          contenedor.appendChild(card);
+        });
+      } catch (err) {
+        console.error("Error al cargar amigos:", err);
+      }
+    }
+
+    async function buscarAmigos() {
+      const texto = document.getElementById("busqueda").value.trim();
+      if (!texto) return;
+
+      try {
+        const res = await fetch(`/buscarAmigos?nombre=${texto}`);
+        const usuarios = await res.json();
+
+        const contenedor = document.getElementById("resultados-busqueda");
+        contenedor.innerHTML = "";
+
+        usuarios.forEach(user => {
+          if (user.usuario !== usuario) {
+            const card = crearTarjetaUsuario(user, false);
+            contenedor.appendChild(card);
+          }
+        });
+      } catch (err) {
+        console.error("Error en la búsqueda:", err);
+      }
+    }
+
+    function crearTarjetaUsuario(user, esAmigo) {
+      const div = document.createElement("div");
+      div.classList.add("user-card");
+
+      div.innerHTML = `
+        <img src="img/default-avatar.png" alt="Avatar">
+        <div class="user-info">
+          <strong>${user.nombre} ${user.apellido}</strong><br>
+          <small>@${user.usuario}</small>
+        </div>
+        <div class="user-actions">
+          <button onclick="${esAmigo ? `eliminarAmigo('${user.usuario}')` : `agregarAmigo('${user.usuario}')`}">
+            ${esAmigo ? 'Eliminar' : 'Agregar'}
+          </button>
+          <button onclick="iniciarChatPrivado('${user.usuario}')">💬 Chatear</button>
+        </div>
+      `;
+
+      return div;
+    }
+
+    async function agregarAmigo(amigoUsuario) {
+      try {
+        await fetch(`/api/usuarios/${usuario}/agregar-amigo`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amigoUsuario })
+        });
+        cargarAmigos();
+      } catch (err) {
+        console.error("Error al agregar amigo:", err);
+      }
+    }
+
+    async function eliminarAmigo(amigoUsuario) {
+      try {
+        await fetch(`/api/usuarios/${usuario}/eliminar-amigo`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amigoUsuario })
+        });
+        cargarAmigos();
+      } catch (err) {
+        console.error("Error al eliminar amigo:", err);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", cargarAmigos);
+  </script>
+</body>
+</html>

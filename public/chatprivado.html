@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat Privado - Elyos</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      background-color: #0e1a2b;
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+    }
+
+    .nav-bar {
+      background-color: #1c2d44;
+      padding: 12px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .nav-bar a {
+      color: #f1c40f;
+      text-decoration: none;
+      margin: 0 18px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .chat-container {
+      max-width: 800px;
+      margin: 80px auto;
+      background-color: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+
+    .chat-log {
+      max-height: 400px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+
+    .mensaje {
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      border-radius: 10px;
+    }
+
+    .mensaje.propio {
+      background-color: #f1c40f;
+      color: #0e1a2b;
+      text-align: right;
+    }
+
+    .mensaje.ajeno {
+      background-color: #34495e;
+    }
+
+    .mensaje small {
+      display: block;
+      font-size: 12px;
+      color: #ccc;
+    }
+
+    .chat-form {
+      display: flex;
+      gap: 10px;
+    }
+
+    .chat-form input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+    }
+
+    .chat-form button {
+      background-color: #f1c40f;
+      color: #0e1a2b;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-bar">
+    <a href="index.html">Inicio</a>
+    <a href="voz-del-todo.html">Leer Libro</a>
+    <a href="oraculo.html">Ir al Oráculo</a>
+    <a href="comunidad.html">Comunidad</a>
+    <a href="perfil-usuario.html">Perfil</a>
+    <a href="#" onclick="cerrarSesion()">Cerrar Sesión</a>
+  </div>
+
+  <div class="chat-container">
+    <h2>Chat con <span id="destinatarioNombre">...</span></h2>
+
+    <div class="chat-log" id="chatLog">
+      <!-- Mensajes aquí -->
+    </div>
+
+    <form class="chat-form" id="formChat">
+      <input type="text" id="mensajeInput" placeholder="Escribe un mensaje..." />
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const destinatario = urlParams.get('usuario');
+    const emisor = localStorage.getItem('usuario') || "Anónimo";
+    const chatLog = document.getElementById("chatLog");
+    const mensajeInput = document.getElementById("mensajeInput");
+    const formChat = document.getElementById("formChat");
+
+    document.getElementById("destinatarioNombre").innerText = destinatario;
+
+    async function cargarMensajes() {
+      try {
+        const res = await fetch(`/api/mensajesPrivados?emisor=${emisor}&receptor=${destinatario}`);
+        const mensajes = await res.json();
+
+        chatLog.innerHTML = "";
+
+        mensajes.forEach(m => {
+          const div = document.createElement("div");
+          div.classList.add("mensaje");
+          div.classList.add(m.emisor === emisor ? "propio" : "ajeno");
+          div.innerHTML = `
+            <p>${m.contenido}</p>
+            <small>${new Date(m.fecha).toLocaleString()}</small>
+          `;
+          chatLog.appendChild(div);
+        });
+
+        chatLog.scrollTop = chatLog.scrollHeight;
+      } catch (err) {
+        console.error("Error al cargar mensajes:", err);
+      }
+    }
+
+    formChat.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const contenido = mensajeInput.value.trim();
+      if (!contenido) return;
+
+      try {
+        await fetch("/api/mensajesPrivados", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ emisor, receptor: destinatario, contenido })
+        });
+
+        mensajeInput.value = "";
+        cargarMensajes();
+      } catch (err) {
+        console.error("Error al enviar mensaje:", err);
+      }
+    });
+
+    cargarMensajes();
+    setInterval(cargarMensajes, 3000); // Auto refresco cada 3s
+
+    function cerrarSesion() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
