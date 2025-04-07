@@ -190,7 +190,14 @@ app.get("/buscarAmigos", async (req, res) => {
       return res.status(400).json({ mensaje: "Debes escribir un nombre." });
     }
 
-    const amigos = await Usuario.find({ nombre: { $regex: nombre, $options: "i" } });
+    const amigos = await Usuario.find({
+  $or: [
+    { nombre: { $regex: nombre, $options: "i" } },
+    { apellido: { $regex: nombre, $options: "i" } },
+    { usuario: { $regex: nombre, $options: "i" } },
+    { correo: { $regex: nombre, $options: "i" } }
+  ]
+});
     res.json(amigos);
   } catch (error) {
     console.error("🔴 Error buscando amigos:", error);
