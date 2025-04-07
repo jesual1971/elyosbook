@@ -454,8 +454,10 @@ app.get("/api/comunidad", async (req, res) => {
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`🟢 Servidor corriendo en http://localhost:${PORT}`);
+mongoose.connection.once('open', () => {
+  app.listen(PORT, () => {
+    console.log(`🚀 Servidor conectado a MongoDB y corriendo en el puerto ${PORT}`);
+  });
 });
 
 io.on("connection", (socket) => {
