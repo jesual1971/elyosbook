@@ -190,7 +190,7 @@ app.get("/buscarAmigos", async (req, res) => {
       return res.status(400).json({ mensaje: "Debes escribir un nombre." });
     }
 
-    const regex = new RegExp(nombre, "i"); // búsqueda insensible a mayúsculas
+    const regex = new RegExp(nombre, "i");
     const amigos = await Usuario.find({
       $or: [
         { nombre: regex },
