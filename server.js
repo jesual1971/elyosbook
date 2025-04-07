@@ -206,12 +206,6 @@ app.get("/buscarAmigos", async (req, res) => {
     res.status(500).json({ mensaje: "Error en el servidor" });
   }
 });
-    res.json(amigos);
-    catch (error) 
-    console.error("🔴 Error buscando amigos:", error);
-    res.status(500).json({ mensaje: "Error en el servidor" });
-  }
-});
 
 // 🧑 Obtener lista de amigos de un usuario
 app.get("/api/usuarios/:usuario/amigos", async (req, res) => {
