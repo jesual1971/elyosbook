@@ -207,7 +207,7 @@ app.get("/buscarAmigos", async (req, res) => {
   }
 });
     res.json(amigos);
-  } catch (error) {
+  } catch (error) 
     console.error("🔴 Error buscando amigos:", error);
     res.status(500).json({ mensaje: "Error en el servidor" });
   }
