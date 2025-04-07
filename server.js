@@ -275,6 +275,24 @@ app.post("/api/usuarios/:usuario/eliminar-amigo", async (req, res) => {
   }
 });
 
+app.get("/api/mi-perfil", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const usuario = await Usuario.findOne({ usuario: decoded.usuario });
+
+    if (!usuario) return res.status(404).json({ mensaje: "Usuario no encontrado" });
+
+    res.json({
+      usuario: usuario.usuario,
+      avatar: usuario.avatar || "img/default-avatar.png"
+    });
+  } catch (error) {
+    console.error("🔴 Error cargando perfil:", error);
+    res.status(401).json({ mensaje: "Token inválido o expirado" });
+  }
+});
+
 app.get("/mis-amigos/:usuario", async (req, res) => {
   try {
     const usuario = await Usuario.findOne({ usuario: req.params.usuario }).populate("amigos");
