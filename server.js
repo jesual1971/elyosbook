@@ -29,9 +29,13 @@ const openai = new OpenAI({
 });
 
 // 📦 Conexión a MongoDB usando mongoose
-mongoose.connect("mongodb://127.0.0.1:27017/elyos").then(() => {
+mongoose.connect(process.env.MONGO_URI, {
+  serverSelectionTimeoutMS: 10000
+})
+.then(() => {
   console.log("🟢 Conectado a MongoDB con Mongoose");
-}).catch((err) => {
+})
+.catch((err) => {
   console.error("🔴 Error conectando a MongoDB:", err);
 });
 
