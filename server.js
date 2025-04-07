@@ -190,13 +190,21 @@ app.get("/buscarAmigos", async (req, res) => {
       return res.status(400).json({ mensaje: "Debes escribir un nombre." });
     }
 
+    const regex = new RegExp(nombre, "i"); // búsqueda insensible a mayúsculas
     const amigos = await Usuario.find({
-  $or: [
-    { nombre: { $regex: nombre, $options: "i" } },
-    { apellido: { $regex: nombre, $options: "i" } },
-    { usuario: { $regex: nombre, $options: "i" } },
-    { correo: { $regex: nombre, $options: "i" } }
-  ]
+      $or: [
+        { nombre: regex },
+        { apellido: regex },
+        { usuario: regex },
+        { correo: regex }
+      ]
+    });
+
+    res.json(amigos);
+  } catch (error) {
+    console.error("🔴 Error buscando amigos:", error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
 });
     res.json(amigos);
   } catch (error) {
