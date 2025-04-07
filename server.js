@@ -103,6 +103,9 @@ app.post("/registro", async (req, res) => {
 // 🔑 Login
 app.post("/login", async (req, res) => {
   try {
+    console.log("🟡 Intentando login...");
+    console.log("📦 Datos recibidos:", req.body);
+
     const { usuario, password } = req.body;
 
     if (!usuario || !password) {
