@@ -194,9 +194,9 @@
       });
 
       if (res.ok) {
-        alert("Foto actualizada correctamente");
-        location.reload(); // Recarga para mostrar nueva foto
-      } else {
+  alert("Foto actualizada correctamente");
+  document.querySelector("img").src = "img/usuario-ejemplo.jpg?" + new Date().getTime();
+} else {
         alert("Error al subir la imagen");
       }
     } catch (err) {
