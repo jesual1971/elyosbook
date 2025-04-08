@@ -118,7 +118,7 @@
   <div class="profile-container">
     <div class="profile-header">
   <div class="profile-pic-box">
-    <img src="${avatar}?t=${Date.now()}" alt="Foto de perfil">
+    <img id="avatarUsuario" src="img/default-avatar.png" alt="Foto de perfil">
     <form id="formFoto" class="form-foto" enctype="multipart/form-data">
       <input type="file" id="fotoPerfil" name="foto" accept="image/*">
       <button type="submit">Cambiar foto</button>
@@ -195,10 +195,14 @@
 
       if (res.ok) {
   alert("Foto actualizada correctamente");
-  document.querySelector("img").src = "img/usuario-ejemplo.jpg?" + new Date().getTime();
+
+  const nombreArchivo = archivo.name;
+  const nuevaRuta = "img/" + nombreArchivo + "?t=" + Date.now();
+
+  document.getElementById("avatarUsuario").src = nuevaRuta;
 } else {
-        alert("Error al subir la imagen");
-      }
+  alert("Error al subir la imagen");
+}
     } catch (err) {
       console.error(err);
       alert("Ocurrió un error al subir la foto");
