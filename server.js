@@ -70,8 +70,23 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname);
-    cb(null, "usuario-ejemplo" + ext);
-  },
+    
+    // 🔐 Obtener el usuario del token si lo usas
+    let usuario = "generico";
+    try {
+      const token = req.headers.authorization?.split(" ")[1];
+      if (token) {
+        const payload = jwt.verify(token, SECRET_KEY);
+        usuario = payload.usuario;
+      }
+    } catch (err) {
+      console.error("No se pudo obtener usuario del token:", err);
+    }
+
+    const nombreFinal = `${usuario}-${Date.now()}${ext}`;
+    req.nombreDeArchivoSubido = nombreFinal; // lo guardamos para el paso 2
+    cb(null, nombreFinal);
+  }
 });
 const upload = multer({ storage: storage });
 
