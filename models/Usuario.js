@@ -14,8 +14,13 @@ const usuarioSchema = new mongoose.Schema({
   amigos: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Usuario"
-  }]
+  }],
+  creadoEn: {
+    type: Date,
+    default: Date.now
+  }
 });
 
 module.exports = mongoose.model("Usuario", usuarioSchema, "usuarios");
+
 

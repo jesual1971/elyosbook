@@ -126,7 +126,7 @@
   </div>
   <div class="profile-info">
     <h2 id="nombreUsuario">Cargando...</h2>
-    <p>Miembro desde: enero 2025</p>
+    <p id="fechaMiembro">Miembro desde: ...</p>
   </div>
 </div>
 
@@ -216,10 +216,19 @@
         },
       });
       const data = await res.json();
+
       if (res.ok) {
         document.getElementById("nombreUsuario").textContent = data.usuario || "Usuario";
+        
         if (data.avatar) {
-          document.querySelector(".profile-header img").src = data.avatar;
+          document.getElementById("avatarUsuario").src = data.avatar;
+        }
+
+        if (data.creadoEn) {
+          const fecha = new Date(data.creadoEn);
+          const opciones = { year: "numeric", month: "long" };
+          const fechaFormateada = fecha.toLocaleDateString("es-ES", opciones);
+          document.getElementById("fechaMiembro").textContent = "Miembro desde: " + fechaFormateada;
         }
       } else {
         alert("No se pudo cargar el perfil");

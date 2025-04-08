@@ -317,7 +317,8 @@ app.get("/api/mi-perfil", async (req, res) => {
 
     res.json({
       usuario: usuario.usuario,
-      avatar: usuario.avatar || "img/default-avatar.png"
+      avatar: usuario.avatar || "img/default-avatar.png",
+      creadoEn: usuario.creadoEn
     });
   } catch (error) {
     console.error("🔴 Error cargando perfil:", error);
