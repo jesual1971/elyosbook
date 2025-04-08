@@ -126,106 +126,114 @@
   </div>
 
   <script>
-    const usuario = localStorage.getItem("usuario");
+  const usuario = localStorage.getItem("usuario");
 
-    function cerrarSesion() {
-      localStorage.removeItem("token");
-      localStorage.removeItem("usuario");
-      window.location.href = "index.html";
+  function cerrarSesion() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    window.location.href = "index.html";
+  }
+
+  function iniciarChatPrivado(destinatario) {
+    window.location.href = `chat-privado.html?usuario=${encodeURIComponent(destinatario)}`;
+  }
+
+  // ✅ Mover funciones aquí para que existan antes de usarlas en innerHTML
+  function verPerfil(usuario) {
+    window.location.href = `perfil-amigo.html?usuario=${usuario}`;
+  }
+
+  function ampliarAvatar(url) {
+    window.open(url, "_blank");
+  }
+
+  function crearTarjetaUsuario(user, esAmigo) {
+    const div = document.createElement("div");
+    div.classList.add("user-card");
+
+    div.innerHTML = `
+      <img src="${user.avatar || 'img/default-avatar.png'}" alt="Avatar" style="cursor: pointer;" onclick="ampliarAvatar('${user.avatar || 'img/default-avatar.png'}')">
+      <div class="user-info">
+        <strong style="cursor: pointer; color: #f1c40f;" onclick="verPerfil('${user.usuario}')">${user.nombre} ${user.apellido}</strong><br>
+        <small>@${user.usuario}</small>
+      </div>
+      <div class="user-actions">
+        <button onclick="${esAmigo ? `eliminarAmigo('${user.usuario}')` : `agregarAmigo('${user.usuario}')`}">
+          ${esAmigo ? 'Eliminar' : 'Agregar'}
+        </button>
+        <button onclick="iniciarChatPrivado('${user.usuario}')">💬 Chatear</button>
+      </div>
+    `;
+    return div;
+  }
+
+  async function cargarAmigos() {
+    try {
+      const res = await fetch(`/api/usuarios/${usuario}/amigos`);
+      const amigos = await res.json();
+
+      const contenedor = document.getElementById("lista-amigos");
+      contenedor.innerHTML = "";
+
+      amigos.forEach(amigo => {
+        const card = crearTarjetaUsuario(amigo, true);
+        contenedor.appendChild(card);
+      });
+    } catch (err) {
+      console.error("Error al cargar amigos:", err);
     }
+  }
 
-    function iniciarChatPrivado(destinatario) {
-      window.location.href = `chat-privado.html?usuario=${encodeURIComponent(destinatario)}`;
-    }
+  async function buscarAmigos() {
+    const texto = document.getElementById("busqueda").value.trim();
+    if (!texto) return;
 
-    async function cargarAmigos() {
-      try {
-        const res = await fetch(`/api/usuarios/${usuario}/amigos`);
-        const amigos = await res.json();
+    try {
+      const res = await fetch(`/buscarAmigos?nombre=${texto}`);
+      const usuarios = await res.json();
 
-        const contenedor = document.getElementById("lista-amigos");
-        contenedor.innerHTML = "";
+      const contenedor = document.getElementById("resultados-busqueda");
+      contenedor.innerHTML = "";
 
-        amigos.forEach(amigo => {
-          const card = crearTarjetaUsuario(amigo, true);
+      usuarios.forEach(user => {
+        if (user.usuario !== usuario) {
+          const card = crearTarjetaUsuario(user, false);
           contenedor.appendChild(card);
-        });
-      } catch (err) {
-        console.error("Error al cargar amigos:", err);
-      }
+        }
+      });
+    } catch (err) {
+      console.error("Error en la búsqueda:", err);
     }
+  }
 
-    async function buscarAmigos() {
-      const texto = document.getElementById("busqueda").value.trim();
-      if (!texto) return;
-
-      try {
-        const res = await fetch(`/buscarAmigos?nombre=${texto}`);
-        const usuarios = await res.json();
-
-        const contenedor = document.getElementById("resultados-busqueda");
-        contenedor.innerHTML = "";
-
-        usuarios.forEach(user => {
-          if (user.usuario !== usuario) {
-            const card = crearTarjetaUsuario(user, false);
-            contenedor.appendChild(card);
-          }
-        });
-      } catch (err) {
-        console.error("Error en la búsqueda:", err);
-      }
+  async function agregarAmigo(amigoUsuario) {
+    try {
+      await fetch(`/api/usuarios/${usuario}/agregar-amigo`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amigoUsuario })
+      });
+      cargarAmigos();
+    } catch (err) {
+      console.error("Error al agregar amigo:", err);
     }
+  }
 
-    function crearTarjetaUsuario(user, esAmigo) {
-  const div = document.createElement("div");
-  div.classList.add("user-card");
-
-  div.innerHTML = `
-    <img src="${user.avatar || 'img/default-avatar.png'}" alt="Avatar" style="cursor: pointer;" onclick="ampliarAvatar('${user.avatar || 'img/default-avatar.png'}')">
-    <div class="user-info">
-      <strong style="cursor: pointer; color: #f1c40f;" onclick="verPerfil('${user.usuario}')">${user.nombre} ${user.apellido}</strong><br>
-      <small>@${user.usuario}</small>
-    </div>
-    <div class="user-actions">
-      <button onclick="${esAmigo ? `eliminarAmigo('${user.usuario}')` : `agregarAmigo('${user.usuario}')`}">
-        ${esAmigo ? 'Eliminar' : 'Agregar'}
-      </button>
-      <button onclick="iniciarChatPrivado('${user.usuario}')">💬 Chatear</button>
-    </div>
-  `;
-
-  return div;
-}
-
-    async function agregarAmigo(amigoUsuario) {
-      try {
-        await fetch(`/api/usuarios/${usuario}/agregar-amigo`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amigoUsuario })
-        });
-        cargarAmigos();
-      } catch (err) {
-        console.error("Error al agregar amigo:", err);
-      }
+  async function eliminarAmigo(amigoUsuario) {
+    try {
+      await fetch(`/api/usuarios/${usuario}/eliminar-amigo`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amigoUsuario })
+      });
+      cargarAmigos();
+    } catch (err) {
+      console.error("Error al eliminar amigo:", err);
     }
+  }
 
-    async function eliminarAmigo(amigoUsuario) {
-      try {
-        await fetch(`/api/usuarios/${usuario}/eliminar-amigo`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amigoUsuario })
-        });
-        cargarAmigos();
-      } catch (err) {
-        console.error("Error al eliminar amigo:", err);
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", cargarAmigos);
-  </script>
+  document.addEventListener("DOMContentLoaded", cargarAmigos);
+</script>
   <script>
   function verImagen(ruta) {
     const ventana = window.open("", "_blank");
