@@ -117,13 +117,17 @@
 
   <div class="profile-container">
     <div class="profile-header">
-  <div class="profile-pic-box">
-    <img id="avatarUsuario" src="img/default-avatar.png" alt="Foto de perfil">
-    <form id="formFoto" class="form-foto" enctype="multipart/form-data">
-      <input type="file" id="fotoPerfil" name="foto" accept="image/*">
-      <button type="submit">Cambiar foto</button>
-    </form>
-  </div>
+  <div class="profile-pic-box" style="position: relative; display: flex; align-items: center; gap: 10px;">
+  <img id="avatarUsuario" src="img/default-avatar.png" alt="Foto de perfil">
+
+  <form id="formFoto" class="form-foto" enctype="multipart/form-data" style="display: flex; align-items: center; gap: 10px;">
+    <label for="fotoPerfil" style="cursor: pointer;">
+      <img src="img/camara.png" alt="Cambiar foto" style="width: 36px; height: 36px;">
+    </label>
+    <input type="file" id="fotoPerfil" name="foto" accept="image/*" style="display: none;">
+    <button type="submit">Cambiar foto</button>
+  </form>
+</div>
   <div class="profile-info">
     <h2 id="nombreUsuario">Cargando...</h2>
     <p id="fechaMiembro">Miembro desde: ...</p>
