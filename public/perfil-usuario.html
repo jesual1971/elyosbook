@@ -102,6 +102,19 @@
       margin-bottom: 15px;
       border: 1px solid #d0e3ff;
     }
+    
+    .camera-icon img {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.camera-icon {
+  display: inline-block;
+  margin-right: 10px;
+  vertical-align: middle;
+}
   </style>
 </head>
 <body>
@@ -120,13 +133,13 @@
   <div class="profile-pic-box" style="position: relative; display: flex; align-items: center; gap: 10px;">
   <img id="avatarUsuario" src="img/default-avatar.png" alt="Foto de perfil">
 
-  <form id="formFoto" class="form-foto" enctype="multipart/form-data" style="display: flex; align-items: center; gap: 10px;">
-    <label for="fotoPerfil" style="cursor: pointer;">
-      <img src="img/camara.png" alt="Cambiar foto" style="width: 36px; height: 36px;">
-    </label>
-    <input type="file" id="fotoPerfil" name="foto" accept="image/*" style="display: none;">
-    <button type="submit">Cambiar foto</button>
-  </form>
+  <form id="formFoto" class="form-foto" enctype="multipart/form-data">
+  <label for="fotoPerfil" class="camera-icon">
+    <img src="img/camara.png" alt="Subir foto">
+  </label>
+  <input type="file" id="fotoPerfil" name="foto" accept="image/*" style="display: none;">
+  <button type="submit">Cambiar foto</button>
+</form>
 </div>
   <div class="profile-info">
     <h2 id="nombreUsuario">Cargando...</h2>
