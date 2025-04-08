@@ -194,12 +194,9 @@
       });
 
       if (res.ok) {
+  const resultado = await res.json();
   alert("Foto actualizada correctamente");
-
-  const nombreArchivo = archivo.name;
-  const nuevaRuta = "img/" + nombreArchivo + "?t=" + Date.now();
-
-  document.getElementById("avatarUsuario").src = nuevaRuta;
+  document.getElementById("avatarUsuario").src = resultado.avatar + "?" + Date.now();
 } else {
   alert("Error al subir la imagen");
 }

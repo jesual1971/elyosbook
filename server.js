@@ -101,7 +101,10 @@ app.post("/perfil/foto", upload.single("foto"), async (req, res) => {
     usuario.avatar = `img/${req.nombreDeArchivoSubido}`;
     await usuario.save();
 
-    res.status(200).json({ mensaje: "Imagen subida con éxito" });
+    res.status(200).json({
+  mensaje: "Imagen subida con éxito",
+  avatar: `img/${req.nombreDeArchivoSubido}`
+});
   } catch (err) {
     console.error("❌ Error actualizando avatar:", err);
     res.status(500).json({ mensaje: "Error al actualizar la imagen de perfil" });
