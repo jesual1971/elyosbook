@@ -90,8 +90,22 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-app.post("/perfil/foto", upload.single("foto"), (req, res) => {
-  res.status(200).json({ mensaje: "Imagen subida con éxito" });
+app.post("/perfil/foto", upload.single("foto"), async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    const decoded = jwt.verify(token, SECRET_KEY);
+
+    const usuario = await Usuario.findOne({ usuario: decoded.usuario });
+    if (!usuario) return res.status(404).json({ mensaje: "Usuario no encontrado" });
+
+    usuario.avatar = `img/${req.nombreDeArchivoSubido}`;
+    await usuario.save();
+
+    res.status(200).json({ mensaje: "Imagen subida con éxito" });
+  } catch (err) {
+    console.error("❌ Error actualizando avatar:", err);
+    res.status(500).json({ mensaje: "Error al actualizar la imagen de perfil" });
+  }
 });
 
 // 🔐 Registro
