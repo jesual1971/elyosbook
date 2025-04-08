@@ -178,25 +178,25 @@
     }
 
     function crearTarjetaUsuario(user, esAmigo) {
-      const div = document.createElement("div");
-      div.classList.add("user-card");
+  const div = document.createElement("div");
+  div.classList.add("user-card");
 
-      div.innerHTML = `
-        <img src="img/default-avatar.png" alt="Avatar">
-        <div class="user-info">
-          <strong>${user.nombre} ${user.apellido}</strong><br>
-          <small>@${user.usuario}</small>
-        </div>
-        <div class="user-actions">
-          <button onclick="${esAmigo ? `eliminarAmigo('${user.usuario}')` : `agregarAmigo('${user.usuario}')`}">
-            ${esAmigo ? 'Eliminar' : 'Agregar'}
-          </button>
-          <button onclick="iniciarChatPrivado('${user.usuario}')">💬 Chatear</button>
-        </div>
-      `;
+  div.innerHTML = `
+    <img src="${user.avatar || 'img/default-avatar.png'}" alt="Avatar" style="cursor: pointer;" onclick="ampliarAvatar('${user.avatar || 'img/default-avatar.png'}')">
+    <div class="user-info">
+      <strong style="cursor: pointer; color: #f1c40f;" onclick="verPerfil('${user.usuario}')">${user.nombre} ${user.apellido}</strong><br>
+      <small>@${user.usuario}</small>
+    </div>
+    <div class="user-actions">
+      <button onclick="${esAmigo ? `eliminarAmigo('${user.usuario}')` : `agregarAmigo('${user.usuario}')`}">
+        ${esAmigo ? 'Eliminar' : 'Agregar'}
+      </button>
+      <button onclick="iniciarChatPrivado('${user.usuario}')">💬 Chatear</button>
+    </div>
+  `;
 
-      return div;
-    }
+  return div;
+}
 
     async function agregarAmigo(amigoUsuario) {
       try {
@@ -226,5 +226,18 @@
 
     document.addEventListener("DOMContentLoaded", cargarAmigos);
   </script>
+  <script>
+  function verImagen(ruta) {
+    const ventana = window.open("", "_blank");
+    ventana.document.write(`<img src="${ruta}" style="max-width:100%; max-height:100vh;">`);
+  }
+  function verPerfil(usuario) {
+  window.location.href = `perfil-amigo.html?usuario=${usuario}`;
+}
+
+function ampliarAvatar(url) {
+  window.open(url, "_blank");
+}
+</script>
 </body>
 </html>
