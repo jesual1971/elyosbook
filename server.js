@@ -369,9 +369,13 @@ app.get("/api/usuarios/:usuario/solicitudes", async (req, res) => {
       return res.status(404).json({ mensaje: "Usuario no encontrado" });
     }
 
-    res.json(usuario.solicitudes || []);
+    const usuariosSolicitantes = await Usuario.find({
+      usuario: { $in: usuario.solicitudes || [] }
+    });
+
+    res.json({ solicitudes: usuariosSolicitantes });
   } catch (error) {
-    console.error("Error obteniendo solicitudes:", error);
+    console.error("❌ Error al obtener solicitudes:", error);
     res.status(500).json({ mensaje: "Error del servidor" });
   }
 });
