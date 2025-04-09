@@ -16,11 +16,17 @@ const usuarioSchema = new mongoose.Schema({
     ref: "Usuario"
   }],
   solicitudes: [{
-  type: mongoose.Schema.Types.ObjectId,
-  ref: "Usuario"
-}],
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Usuario"
+  }],
+  creadoEn: {
+    type: Date,
+    default: Date.now
+  }
+});
 
 module.exports = mongoose.model("Usuario", usuarioSchema, "usuarios");
+
 
 
 
