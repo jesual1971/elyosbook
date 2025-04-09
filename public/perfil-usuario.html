@@ -143,6 +143,10 @@
 </div>
   <div class="profile-info">
     <h2 id="nombreUsuario">Cargando...</h2>
+    <div id="solicitudes-container">
+  <h3>Solicitudes de amistad</h3>
+  <ul id="solicitudes-lista" style="list-style: none; padding: 0;"></ul>
+</div>
     <p id="fechaMiembro">Miembro desde: ...</p>
   </div>
 </div>
@@ -256,6 +260,82 @@
   }
 
   cargarDatosPerfil();
+</script>
+<script>
+  async function cargarSolicitudes() {
+    const usuario = localStorage.getItem("usuario");
+    try {
+      const res = await fetch(`/api/usuarios/${usuario}/solicitudes`);
+      const data = await res.json();
+
+      if (res.ok) {
+        const lista = document.getElementById("solicitudes-lista");
+        lista.innerHTML = "";
+
+        if (data.solicitudes.length === 0) {
+          lista.innerHTML = "<li>No tienes solicitudes pendientes.</li>";
+        } else {
+          data.solicitudes.forEach((solicitante) => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+              <strong>@${solicitante.usuario}</strong>
+              <button onclick="aceptarSolicitud('${solicitante.usuario}')">Aceptar</button>
+              <button onclick="rechazarSolicitud('${solicitante.usuario}')">Rechazar</button>
+            `;
+            lista.appendChild(li);
+          });
+        }
+      } else {
+        console.error("Error cargando solicitudes:", data.mensaje);
+      }
+    } catch (error) {
+      console.error("❌ Error al obtener solicitudes:", error);
+    }
+  }
+
+  async function aceptarSolicitud(de) {
+    const usuario = localStorage.getItem("usuario");
+    try {
+      const res = await fetch(`/api/usuarios/${usuario}/agregar-amigo`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amigoId: de })
+      });
+
+      if (res.ok) {
+        alert("Solicitud aceptada");
+        cargarSolicitudes();
+      } else {
+        alert("Error al aceptar solicitud");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function rechazarSolicitud(de) {
+    const usuario = localStorage.getItem("usuario");
+    try {
+      const res = await fetch(`/api/usuarios/${usuario}/rechazar-solicitud`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ de })
+      });
+
+      if (res.ok) {
+        alert("Solicitud rechazada");
+        cargarSolicitudes();
+      } else {
+        alert("Error al rechazar solicitud");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    cargarSolicitudes();
+  });
 </script>
 
 </body>
