@@ -148,7 +148,7 @@
   <ul id="solicitudes-lista" style="list-style: none; padding: 0;"></ul>
 </div>
     <p id="fechaMiembro">Miembro desde: ...</p>
-    <div class="solicitudes-container" style="max-width: 800px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 10px;">
+    <div id="solicitudes-container">
   <h3>Solicitudes de amistad</h3>
   <ul id="lista-solicitudes" style="list-style: none; padding: 0;"></ul>
 </div>
@@ -266,37 +266,6 @@
   cargarDatosPerfil();
 </script>
 <script>
-  async function cargarSolicitudes() {
-    const usuario = localStorage.getItem("usuario");
-    try {
-      const res = await fetch(`/api/usuarios/${usuario}/solicitudes`);
-      const data = await res.json();
-
-      if (res.ok) {
-        const lista = document.getElementById("solicitudes-lista");
-        lista.innerHTML = "";
-
-        if (data.solicitudes.length === 0) {
-          lista.innerHTML = "<li>No tienes solicitudes pendientes.</li>";
-        } else {
-          data.solicitudes.forEach((solicitante) => {
-            const li = document.createElement("li");
-            li.innerHTML = `
-              <strong>@${solicitante.usuario}</strong>
-              <button onclick="aceptarSolicitud('${solicitante.usuario}')">Aceptar</button>
-              <button onclick="rechazarSolicitud('${solicitante.usuario}')">Rechazar</button>
-            `;
-            lista.appendChild(li);
-          });
-        }
-      } else {
-        console.error("Error cargando solicitudes:", data.mensaje);
-      }
-    } catch (error) {
-      console.error("❌ Error al obtener solicitudes:", error);
-    }
-  }
-
   async function aceptarSolicitud(de) {
     const usuario = localStorage.getItem("usuario");
     try {
@@ -342,7 +311,6 @@
   });
 </script>
 
-
 <script>
 async function cargarSolicitudes() {
   const token = localStorage.getItem("token");
@@ -358,14 +326,28 @@ async function cargarSolicitudes() {
 
     solicitudes.forEach(usuario => {
   const li = document.createElement("li");
+  li.style.display = "flex";
+  li.style.alignItems = "center";
+  li.style.justifyContent = "space-between";
+  li.style.padding = "10px";
+  li.style.borderBottom = "1px solid #ccc";
+
   li.innerHTML = `
-    <img src="${usuario.avatar || 'img/default-avatar.png'}" style="width:40px;height:40px;border-radius:50%;margin-right:10px;">
-    <strong>@${usuario.usuario} (${usuario.nombre})</strong>
-    <button onclick="aceptarSolicitud('${usuario.usuario}')" style="margin-left: 10px;">Aceptar</button>
-    <button onclick="rechazarSolicitud('${usuario.usuario}')" style="margin-left: 5px;">Rechazar</button>
+    <div style="display: flex; align-items: center;">
+      <img src="${usuario.avatar || 'img/default-avatar.png'}" style="width:50px;height:50px;border-radius:50%;margin-right:15px;">
+      <div>
+        <strong style="color: #003f8a">@${usuario.usuario}</strong><br>
+        <small>${usuario.nombre || ""} ${usuario.apellido || ""}</small>
+      </div>
+    </div>
+    <div>
+      <button onclick="aceptarSolicitud('${usuario.usuario}')" style="padding:8px 12px;background:#003f8a;color:#fff;border:none;border-radius:6px;cursor:pointer;">Aceptar</button>
+      <button onclick="rechazarSolicitud('${usuario.usuario}')" style="padding:8px 12px;background:#ccc;color:#333;border:none;border-radius:6px;cursor:pointer;margin-left:6px;">Rechazar</button>
+    </div>
   `;
   lista.appendChild(li);
 });
+
   } catch (err) {
     console.error("Error cargando solicitudes:", err);
   }
@@ -373,14 +355,16 @@ async function cargarSolicitudes() {
 
 async function aceptarSolicitud(amigoUsuario) {
   const token = localStorage.getItem("token");
+  const miUsuario = localStorage.getItem("usuario");
+
   try {
-    const res = await fetch("/api/aceptar-amistad", {
+    const res = await fetch(`/api/usuarios/${miUsuario}/aceptar-amigo`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       },
-      body: JSON.stringify({ amigoUsuario })
+      body: JSON.stringify({ idAmigo: amigoUsuario })
     });
 
     const data = await res.json();
