@@ -360,6 +360,22 @@ app.get("/api/usuarios/:usuario", async (req, res) => {
   }
 });
 
+// ✅ Ver solicitudes de amistad recibidas por un usuario
+app.get("/api/usuarios/:usuario/solicitudes", async (req, res) => {
+  try {
+    const usuario = await Usuario.findOne({ usuario: req.params.usuario });
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
+
+    res.json(usuario.solicitudes || []);
+  } catch (error) {
+    console.error("Error obteniendo solicitudes:", error);
+    res.status(500).json({ mensaje: "Error del servidor" });
+  }
+});
+
 app.get("/api/mi-perfil", async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
