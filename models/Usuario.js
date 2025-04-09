@@ -15,12 +15,10 @@ const usuarioSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Usuario"
   }],
-  solicitudes: [String], // ← 👈 Aquí está el nuevo campo
-  creadoEn: {
-    type: Date,
-    default: Date.now
-  }
-});
+  solicitudes: [{
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Usuario"
+}],
 
 module.exports = mongoose.model("Usuario", usuarioSchema, "usuarios");
 
