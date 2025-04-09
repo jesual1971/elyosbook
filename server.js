@@ -422,14 +422,15 @@ app.get("/api/mi-perfil", async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
     const decoded = jwt.verify(token, SECRET_KEY);
-    const usuario = await Usuario.findOne({ usuario: decoded.usuario });
+    const usuario = await Usuario.findOne({ usuario: decoded.usuario }).populate("solicitudes");
 
     if (!usuario) return res.status(404).json({ mensaje: "Usuario no encontrado" });
 
     res.json({
       usuario: usuario.usuario,
       avatar: usuario.avatar || "img/default-avatar.png",
-      creadoEn: usuario.creadoEn
+      creadoEn: usuario.creadoEn,
+      solicitudes: usuario.solicitudes.map(u => u.usuario) // ⬅ devuelve solo los nombres de usuario
     });
   } catch (error) {
     console.error("🔴 Error cargando perfil:", error);
