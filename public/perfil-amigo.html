@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil del Usuario</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      background-color: #0e1a2b;
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .profile-container {
+      margin-top: 80px;
+    }
+
+    .profile-container img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #f1c40f;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      background-color: #f1c40f;
+      color: #0e1a2b;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-container">
+    <img id="avatarAmigo" src="img/default-avatar.png" alt="Foto de perfil">
+    <h2 id="nombreCompleto">Nombre Apellido</h2>
+    <p id="usuarioTag">@usuario</p>
+    <button class="btn" onclick="window.history.back()">Volver</button>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const usuario = params.get("usuario");
+
+    async function cargarPerfil() {
+      try {
+        const res = await fetch(`/api/usuarios/${usuario}`);
+        const data = await res.json();
+
+        if (res.ok) {
+          document.getElementById("avatarAmigo").src = data.avatar || "img/default-avatar.png";
+          document.getElementById("nombreCompleto").textContent = `${data.nombre} ${data.apellido}`;
+          document.getElementById("usuarioTag").textContent = "@" + data.usuario;
+        } else {
+          alert(data.mensaje || "No se pudo cargar el perfil");
+        }
+      } catch (err) {
+        console.error("Error cargando perfil de amigo:", err);
+        alert("Ocurrió un error");
+      }
+    }
+
+    cargarPerfil();
+  </script>
+</body>
+</html>
