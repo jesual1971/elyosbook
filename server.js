@@ -307,6 +307,21 @@ app.post("/api/usuarios/:usuario/eliminar-amigo", async (req, res) => {
   }
 });
 
+// 📩 Solicitar amistad
+app.post("/api/solicitud-amistad", async (req, res) => {
+  try {
+    const { de, para } = req.body;
+
+    // Aquí puedes guardar la solicitud o procesarla según lo necesites.
+    console.log(`🔔 Solicitud recibida de ${de} para ${para}`);
+
+    res.status(200).json({ mensaje: "Solicitud enviada correctamente" });
+  } catch (error) {
+    console.error("Error enviando solicitud:", error);
+    res.status(500).json({ mensaje: "Error al enviar solicitud" });
+  }
+});
+
 // ✅ Ruta para consultar perfil público de un usuario
 app.get("/api/usuarios/:usuario", async (req, res) => {
   try {
