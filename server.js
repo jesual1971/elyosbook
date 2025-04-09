@@ -158,7 +158,7 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ mensaje: "Contraseña incorrecta." });
     }
 
-    const token = jwt.sign({ usuario: usuarioEncontrado.usuario }, SECRET_KEY, { expiresIn: "1h" });
+    const token = jwt.sign({ usuario: usuarioEncontrado.usuario }, SECRET_KEY, { expiresIn: "7d" });
     res.json({ mensaje: "Inicio de sesión exitoso", token });
   } catch (error) {
     console.error("🔴 Error en el login:", error);
