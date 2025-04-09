@@ -281,7 +281,7 @@ app.post("/api/usuarios/:usuario/agregar-amigo", async (req, res) => {
 
     // Elimina solicitud de amistad si existe
     usuarioPrincipal.solicitudes = usuarioPrincipal.solicitudes.filter(
-  nombre => nombre !== usuarioAmigo.usuario
+  id => id.toString() !== usuarioAmigo._id.toString()
 );
 
     await usuarioPrincipal.save();
