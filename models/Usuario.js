@@ -15,6 +15,7 @@ const usuarioSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Usuario"
   }],
+  solicitudes: [String], // ← 👈 Aquí está el nuevo campo
   creadoEn: {
     type: Date,
     default: Date.now
@@ -22,5 +23,6 @@ const usuarioSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("Usuario", usuarioSchema, "usuarios");
+
 
 
