@@ -375,6 +375,48 @@ app.get("/api/usuarios/:usuario/solicitudes", async (req, res) => {
     res.status(500).json({ mensaje: "Error del servidor" });
   }
 });
+app.post("/api/usuarios/:usuario/aceptar-amigo", async (req, res) => {
+  try {
+    const { usuario } = req.params;
+    const { idAmigo } = req.body;
+
+    const user = await Usuario.findOne({ usuario });
+    const amigo = await Usuario.findById(idAmigo);
+
+    if (!user || !amigo) return res.status(404).json({ mensaje: "Usuario no encontrado" });
+
+    // Evita duplicados
+    if (!user.amigos.includes(idAmigo)) user.amigos.push(idAmigo);
+    if (!amigo.amigos.includes(user._id)) amigo.amigos.push(user._id);
+
+    // Elimina la solicitud después de aceptar
+    user.solicitudes = user.solicitudes.filter(id => id.toString() !== idAmigo);
+    
+    await user.save();
+    await amigo.save();
+
+    res.json({ mensaje: "Amistad confirmada" });
+  } catch (error) {
+    console.error("❌ Error al aceptar solicitud:", error);
+    res.status(500).json({ mensaje: "Error al aceptar la solicitud" });
+  }
+});
+
+// ✅ Obtener solicitudes de amistad pendientes
+app.get("/api/solicitudes/:usuario", async (req, res) => {
+  try {
+    const usuario = await Usuario.findOne({ usuario: req.params.usuario }).populate("solicitudes");
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
+
+    res.json(usuario.solicitudes);
+  } catch (error) {
+    console.error("❌ Error al obtener solicitudes:", error);
+    res.status(500).json({ mensaje: "Error del servidor" });
+  }
+});
 
 app.get("/api/mi-perfil", async (req, res) => {
   try {
