@@ -338,6 +338,52 @@ app.post("/api/solicitud-amistad", async (req, res) => {
     res.status(500).json({ mensaje: "Error al enviar solicitud" });
   }
 });
+// ✅ Aceptar solicitud de amistad
+app.post("/api/aceptar-amistad", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    const decoded = jwt.verify(token, SECRET_KEY);
+
+    const usuario = await Usuario.findOne({ usuario: decoded.usuario });
+    const { amigoUsuario } = req.body;
+    const amigo = await Usuario.findOne({ usuario: amigoUsuario });
+
+    if (!usuario || !amigo) return res.status(404).json({ mensaje: "Usuario no encontrado" });
+
+    if (!usuario.amigos.includes(amigo._id)) usuario.amigos.push(amigo._id);
+    if (!amigo.amigos.includes(usuario._id)) amigo.amigos.push(usuario._id);
+
+    usuario.solicitudes = usuario.solicitudes.filter(nombre => nombre !== amigoUsuario);
+
+    await usuario.save();
+    await amigo.save();
+
+    res.json({ mensaje: "Ahora son amigos 🎉" });
+  } catch (error) {
+    console.error("❌ Error al aceptar solicitud:", error);
+    res.status(500).json({ mensaje: "Error del servidor" });
+  }
+});
+
+// ✅ Rechazar solicitud de amistad
+app.post("/api/usuarios/:usuario/rechazar-solicitud", async (req, res) => {
+  try {
+    const { usuario } = req.params;
+    const { de } = req.body;
+
+    const user = await Usuario.findOne({ usuario });
+
+    if (!user) return res.status(404).json({ mensaje: "Usuario no encontrado" });
+
+    user.solicitudes = user.solicitudes.filter(nombre => nombre !== de);
+    await user.save();
+
+    res.json({ mensaje: "Solicitud rechazada" });
+  } catch (error) {
+    console.error("❌ Error al rechazar solicitud:", error);
+    res.status(500).json({ mensaje: "Error del servidor" });
+  }
+});
 
 // ✅ Ruta para consultar perfil público de un usuario
 app.get("/api/usuarios/:usuario", async (req, res) => {
