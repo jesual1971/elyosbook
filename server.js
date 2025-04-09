@@ -344,24 +344,33 @@ app.post("/api/aceptar-amistad", async (req, res) => {
     const token = req.headers.authorization?.split(" ")[1];
     const decoded = jwt.verify(token, SECRET_KEY);
 
-    const usuario = await Usuario.findOne({ usuario: decoded.usuario });
-    const { amigoUsuario } = req.body;
-    const amigo = await Usuario.findOne({ usuario: amigoUsuario });
+    const usuarioPrincipal = await Usuario.findOne({ usuario: decoded.usuario });
+    const usuarioSolicitante = await Usuario.findOne({ usuario: req.body.amigoUsuario });
 
-    if (!usuario || !amigo) return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    if (!usuarioPrincipal || !usuarioSolicitante) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
 
-    if (!usuario.amigos.includes(amigo._id)) usuario.amigos.push(amigo._id);
-    if (!amigo.amigos.includes(usuario._id)) amigo.amigos.push(usuario._id);
+    // Evita duplicados
+    if (!usuarioPrincipal.amigos.includes(usuarioSolicitante._id)) {
+      usuarioPrincipal.amigos.push(usuarioSolicitante._id);
+    }
+    if (!usuarioSolicitante.amigos.includes(usuarioPrincipal._id)) {
+      usuarioSolicitante.amigos.push(usuarioPrincipal._id);
+    }
 
-    usuario.solicitudes = usuario.solicitudes.filter(nombre => nombre !== amigoUsuario);
+    // Elimina la solicitud
+    usuarioPrincipal.solicitudes = usuarioPrincipal.solicitudes.filter(
+      u => u !== req.body.amigoUsuario
+    );
 
-    await usuario.save();
-    await amigo.save();
+    await usuarioPrincipal.save();
+    await usuarioSolicitante.save();
 
-    res.json({ mensaje: "Ahora son amigos 🎉" });
+    res.json({ mensaje: "Amistad confirmada" });
   } catch (error) {
     console.error("❌ Error al aceptar solicitud:", error);
-    res.status(500).json({ mensaje: "Error del servidor" });
+    res.status(500).json({ mensaje: "Error al aceptar solicitud" });
   }
 });
 
@@ -431,20 +440,25 @@ app.get("/api/usuarios/:usuario/solicitudes", async (req, res) => {
 app.post("/api/usuarios/:usuario/aceptar-amigo", async (req, res) => {
   try {
     const { usuario } = req.params;
-    const { idAmigo } = req.body;
+    const { amigoUsuario } = req.body;
 
     const user = await Usuario.findOne({ usuario });
-    const amigo = await Usuario.findById(idAmigo);
+    const amigo = await Usuario.findOne({ usuario: amigoUsuario });
 
-    if (!user || !amigo) return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    if (!user || !amigo) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
 
-    // Evita duplicados
-    if (!user.amigos.includes(idAmigo)) user.amigos.push(idAmigo);
-    if (!amigo.amigos.includes(user._id)) amigo.amigos.push(user._id);
+    if (!user.amigos.includes(amigo._id)) {
+      user.amigos.push(amigo._id);
+    }
+    if (!amigo.amigos.includes(user._id)) {
+      amigo.amigos.push(user._id);
+    }
 
-    // Elimina la solicitud después de aceptar
-    user.solicitudes = user.solicitudes.filter(id => id.toString() !== idAmigo);
-    
+    // Quitar solicitud
+    user.solicitudes = user.solicitudes.filter(s => s !== amigoUsuario);
+
     await user.save();
     await amigo.save();
 
