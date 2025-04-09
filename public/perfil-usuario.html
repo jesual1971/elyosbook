@@ -337,6 +337,59 @@
     cargarSolicitudes();
   });
 </script>
+<div class="solicitudes-container" style="max-width: 800px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 10px;">
+  <h3>Solicitudes de amistad</h3>
+  <ul id="lista-solicitudes" style="list-style: none; padding: 0;"></ul>
+</div>
+
+<script>
+async function cargarSolicitudes() {
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch("/api/mi-perfil", {
+      headers: { Authorization: "Bearer " + token }
+    });
+    const data = await res.json();
+    const solicitudes = data.solicitudes || [];
+
+    const lista = document.getElementById("lista-solicitudes");
+    lista.innerHTML = "";
+
+    solicitudes.forEach(usuario => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <strong>@${usuario}</strong>
+        <button onclick="aceptarSolicitud('${usuario}')" style="margin-left: 10px;">Aceptar</button>
+      `;
+      lista.appendChild(li);
+    });
+  } catch (err) {
+    console.error("Error cargando solicitudes:", err);
+  }
+}
+
+async function aceptarSolicitud(amigoUsuario) {
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch("/api/aceptar-amistad", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({ amigoUsuario })
+    });
+
+    const data = await res.json();
+    alert(data.mensaje);
+    cargarSolicitudes(); // recarga la lista
+  } catch (err) {
+    console.error("Error aceptando solicitud:", err);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", cargarSolicitudes);
+</script>
 
 </body>
 </html>
