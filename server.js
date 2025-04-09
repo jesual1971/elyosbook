@@ -365,20 +365,23 @@ app.get("/api/usuarios/:usuario/solicitudes", async (req, res) => {
   try {
     const usuario = await Usuario.findOne({ usuario: req.params.usuario });
 
-    if (!usuario) {
-      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    if (!usuario || !usuario.solicitudes) {
+      return res.json([]);
     }
 
-    const usuariosSolicitantes = await Usuario.find({
-      usuario: { $in: usuario.solicitudes || [] }
-    });
+    const detalles = await Promise.all(
+      usuario.solicitudes.map(async (usuarioSolicitante) => {
+        return await Usuario.findOne({ usuario: usuarioSolicitante }, "usuario nombre apellido avatar");
+      })
+    );
 
-    res.json({ solicitudes: usuariosSolicitantes });
+    res.json(detalles);
   } catch (error) {
-    console.error("❌ Error al obtener solicitudes:", error);
+    console.error("❌ Error obteniendo solicitudes:", error);
     res.status(500).json({ mensaje: "Error del servidor" });
   }
 });
+
 app.post("/api/usuarios/:usuario/aceptar-amigo", async (req, res) => {
   try {
     const { usuario } = req.params;
