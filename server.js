@@ -311,23 +311,23 @@ app.post("/api/solicitud-amistad", async (req, res) => {
   try {
     const { de, para } = req.body;
 
+    const usuarioSolicitante = await Usuario.findOne({ usuario: de });
     const usuarioDestino = await Usuario.findOne({ usuario: para });
 
-    if (!usuarioDestino) {
-      return res.status(404).json({ mensaje: "Usuario destinatario no encontrado" });
+    if (!usuarioSolicitante || !usuarioDestino) {
+      return res.status(404).json({ mensaje: "Uno o ambos usuarios no encontrados" });
     }
 
-    // Asegúrate de que el campo solicitudes existe
     if (!usuarioDestino.solicitudes) {
       usuarioDestino.solicitudes = [];
     }
 
     // Evitar duplicados
-    if (usuarioDestino.solicitudes.includes(de)) {
-      return res.status(400).json({ mensaje: "Ya se envió una solicitud" });
+    if (usuarioDestino.solicitudes.includes(usuarioSolicitante._id)) {
+      return res.status(400).json({ mensaje: "Ya enviaste una solicitud" });
     }
 
-    usuarioDestino.solicitudes.push(de);
+    usuarioDestino.solicitudes.push(usuarioSolicitante._id);
     await usuarioDestino.save();
 
     console.log(`🔔 Solicitud de amistad enviada de ${de} para ${para}`);
@@ -338,6 +338,7 @@ app.post("/api/solicitud-amistad", async (req, res) => {
     res.status(500).json({ mensaje: "Error al enviar solicitud" });
   }
 });
+
 // ✅ Aceptar solicitud de amistad
 app.post("/api/aceptar-amistad", async (req, res) => {
   try {
