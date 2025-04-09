@@ -307,6 +307,27 @@ app.post("/api/usuarios/:usuario/eliminar-amigo", async (req, res) => {
   }
 });
 
+// ✅ Ruta para consultar perfil público de un usuario
+app.get("/api/usuarios/:usuario", async (req, res) => {
+  try {
+    const usuario = await Usuario.findOne({ usuario: req.params.usuario });
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
+
+    res.json({
+      nombre: usuario.nombre,
+      apellido: usuario.apellido,
+      usuario: usuario.usuario,
+      avatar: usuario.avatar || "img/default-avatar.png"
+    });
+  } catch (error) {
+    console.error("❌ Error al obtener perfil del usuario:", error);
+    res.status(500).json({ mensaje: "Error del servidor" });
+  }
+});
+
 app.get("/api/mi-perfil", async (req, res) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
