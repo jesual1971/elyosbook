@@ -307,13 +307,22 @@ app.post("/api/usuarios/:usuario/eliminar-amigo", async (req, res) => {
   }
 });
 
-// 📩 Solicitar amistad
 app.post("/api/solicitud-amistad", async (req, res) => {
   try {
     const { de, para } = req.body;
 
-    // Aquí puedes guardar la solicitud o procesarla según lo necesites.
-    console.log(`🔔 Solicitud recibida de ${de} para ${para}`);
+    const usuarioReceptor = await Usuario.findOne({ usuario: para });
+    if (!usuarioReceptor) {
+      return res.status(404).json({ mensaje: "Usuario receptor no encontrado" });
+    }
+
+    // Evitar duplicados
+    if (usuarioReceptor.solicitudes.includes(de)) {
+      return res.status(400).json({ mensaje: "Ya enviaste una solicitud" });
+    }
+
+    usuarioReceptor.solicitudes.push(de);
+    await usuarioReceptor.save();
 
     res.status(200).json({ mensaje: "Solicitud enviada correctamente" });
   } catch (error) {
