@@ -264,21 +264,32 @@ app.post("/api/usuarios/:usuario/agregar-amigo", async (req, res) => {
     const { amigoId } = req.body;
 
     const usuarioPrincipal = await Usuario.findOne({ usuario });
+    const usuarioAmigo = await Usuario.findOne({ usuario: amigoId });
 
-    if (!usuarioPrincipal) {
+    if (!usuarioPrincipal || !usuarioAmigo) {
       return res.status(404).json({ mensaje: "Usuario no encontrado" });
     }
 
-    if (usuarioPrincipal.amigos.includes(amigoId)) {
-      return res.status(400).json({ mensaje: "Ya es tu amigo" });
+    // Verifica que no se hayan agregado antes
+    if (!usuarioPrincipal.amigos.includes(usuarioAmigo._id)) {
+      usuarioPrincipal.amigos.push(usuarioAmigo._id);
     }
 
-    usuarioPrincipal.amigos.push(amigoId);
-    await usuarioPrincipal.save();
+    if (!usuarioAmigo.amigos.includes(usuarioPrincipal._id)) {
+      usuarioAmigo.amigos.push(usuarioPrincipal._id);
+    }
 
-    res.json({ mensaje: "Amigo agregado con éxito" });
+    // Elimina solicitud de amistad si existe
+    usuarioPrincipal.solicitudes = usuarioPrincipal.solicitudes.filter(
+      id => id.toString() !== usuarioAmigo._id.toString()
+    );
+
+    await usuarioPrincipal.save();
+    await usuarioAmigo.save();
+
+    res.json({ mensaje: "Amistad confirmada" });
   } catch (error) {
-    console.error("Error agregando amigo:", error);
+    console.error("❌ Error agregando amigo:", error);
     res.status(500).json({ mensaje: "Error del servidor" });
   }
 });
@@ -509,7 +520,9 @@ app.get("/api/mi-perfil", async (req, res) => {
 
 app.get("/mis-amigos/:usuario", async (req, res) => {
   try {
-    const usuario = await Usuario.findOne({ usuario: req.params.usuario }).populate("amigos");
+    const usuario = await Usuario.findOne({ usuario: req.params.usuario })
+      .populate("amigos", "usuario nombre apellido avatar");
+
     if (!usuario) return res.status(404).json([]);
 
     res.json(usuario.amigos);
