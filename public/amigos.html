@@ -158,14 +158,36 @@
         <small>@${user.usuario}</small>
       </div>
       <div class="user-actions">
-        <button onclick="${esAmigo ? `eliminarAmigo('${user.usuario}')` : `agregarAmigo('${user.usuario}')`}">
-          ${esAmigo ? 'Eliminar' : 'Agregar'}
-        </button>
+        <button onclick="${esAmigo ? `eliminarAmigo('${user.usuario}')` : `enviarSolicitud('${user.usuario}')`}">
+  ${esAmigo ? 'Eliminar amigo' : 'Agregar amigo'}
+</button>
         <button onclick="iniciarChatPrivado('${user.usuario}')">💬 Chatear</button>
       </div>
     `;
     return div;
   }
+
+async function enviarSolicitud(destinatario) {
+  try {
+    const res = await fetch("/api/solicitud-amistad", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        de: usuario,       // quien envía la solicitud
+        para: destinatario // quien la recibe
+      })
+    });
+
+    const data = await res.json();
+    alert(data.mensaje || "Solicitud enviada");
+
+  } catch (error) {
+    console.error("❌ Error al enviar solicitud:", error);
+    alert("Ocurrió un error al enviar la solicitud");
+  }
+}
 
   async function cargarAmigos() {
     try {
