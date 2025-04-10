@@ -63,7 +63,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-const storage = multer.diskStorage({
+const almacenamientoImagenes = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "public/uploads/");
   },
@@ -72,9 +72,9 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage }); // ✅ esta línea puede reemplazar la anterior si ya existe
+const subirImagen = multer({ storage: almacenamientoImagenes });
 
-app.post("/api/subir-imagen", upload.single("imagen"), (req, res) => {
+app.post("/api/subir-imagen", subirImagen.single("imagen"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ mensaje: "No se subió ninguna imagen." });
   }
