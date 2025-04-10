@@ -244,7 +244,7 @@ app.get("/api/usuarios/:usuario/amigos", async (req, res) => {
   try {
     const { usuario } = req.params;
 
-    const usuarioEncontrado = await Usuario.findOne({ usuario }).populate("amigos");
+    const usuarioEncontrado = await Usuario.findOne({ usuario }).populate("amigos", "usuario nombre apellido avatar");
 
     if (!usuarioEncontrado) {
       return res.status(404).json({ mensaje: "Usuario no encontrado" });
