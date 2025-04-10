@@ -661,6 +661,25 @@ app.get("/api/mensajesPrivados/nuevos/:usuario", async (req, res) => {
   }
 });
 
+app.get("/api/mensajesPrivados/no-leidos/:usuario", async (req, res) => {
+  try {
+    const { usuario } = req.params;
+
+    const mensajes = await MensajePrivado.find({ receptor: usuario, leido: false });
+
+    // Agrupa por emisor
+    const resumen = {};
+    mensajes.forEach(m => {
+      resumen[m.emisor] = (resumen[m.emisor] || 0) + 1;
+    });
+
+    res.json(resumen);
+  } catch (error) {
+    console.error("❌ Error al obtener mensajes no leídos por emisor:", error);
+    res.status(500).json({ mensaje: "Error en el servidor" });
+  }
+});
+
 // 📢 Guardar publicación
 app.post("/api/comunidad", async (req, res) => {
   try {
