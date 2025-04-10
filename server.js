@@ -282,7 +282,7 @@ app.get("/api/usuarios/:usuario/amigos-con-mensajes", async (req, res) => {
           nombre: amigo.nombre,
           apellido: amigo.apellido,
           avatar: amigo.avatar || "img/default-avatar.png",
-          mensajesNuevos: mensajesNoLeidos > 0
+          tieneMensajes: mensajesNoLeidos > 0
         };
       })
     );
