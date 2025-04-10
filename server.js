@@ -643,6 +643,24 @@ app.post("/api/mensajesPrivados/marcar-leidos", async (req, res) => {
   }
 });
 
+// ✅ Agrega este endpoint en server.js
+
+app.get("/api/mensajesPrivados/no-leidos/:usuario", async (req, res) => {
+  try {
+    const { usuario } = req.params;
+
+    const mensajesNoLeidos = await MensajePrivado.find({
+      receptor: usuario,
+      leido: false
+    });
+
+    res.json({ cantidad: mensajesNoLeidos.length });
+  } catch (error) {
+    console.error("❌ Error al obtener mensajes no leídos:", error);
+    res.status(500).json({ mensaje: "Error al contar mensajes no leídos" });
+  }
+});
+
 // 📢 Guardar publicación
 app.post("/api/comunidad", async (req, res) => {
   try {

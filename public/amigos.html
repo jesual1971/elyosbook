@@ -269,5 +269,28 @@ function ampliarAvatar(url) {
   window.open(url, "_blank");
 }
 </script>
+<script>
+  async function verificarMensajesNoLeidos() {
+    const usuario = localStorage.getItem("usuario");
+    if (!usuario) return;
+
+    try {
+      const res = await fetch(`/api/mensajesPrivados/no-leidos/${usuario}`);
+      const data = await res.json();
+
+      // Si hay mensajes no leídos, mostrar una alerta visual o ícono
+      if (data.total > 0) {
+        document.title = `🔔 (${data.total}) Tienes mensajes | Elyos`;
+      } else {
+        document.title = "Mis Amigos | Elyos";
+      }
+    } catch (err) {
+      console.error("❌ Error al verificar mensajes no leídos:", err);
+    }
+  }
+
+  setInterval(verificarMensajesNoLeidos, 5000); // verifica cada 5 segundos
+  document.addEventListener("DOMContentLoaded", verificarMensajesNoLeidos);
+</script>
 </body>
 </html>

@@ -388,6 +388,31 @@ async function aceptarSolicitud(idAmigo) {
 document.addEventListener("DOMContentLoaded", cargarSolicitudes);
 
 </script>
+<audio id="sonidoMensaje" src="sounds/notificacion.mp3" preload="auto"></audio>
+
+<script>
+  const miUsuario = localStorage.getItem("usuario");
+
+  async function revisarMensajesNuevos() {
+    try {
+      const res = await fetch(`/api/mensajesPrivados/nuevos/${miUsuario}`);
+      const data = await res.json();
+
+      const icono = document.getElementById("notificacion-icono");
+      if (data.nuevos > 0) {
+        if (icono) icono.style.display = "inline";
+        const sonido = document.getElementById("sonidoMensaje");
+        if (sonido) sonido.play().catch(() => {});
+      } else {
+        if (icono) icono.style.display = "none";
+      }
+    } catch (err) {
+      console.error("❌ Error revisando mensajes nuevos:", err);
+    }
+  }
+
+  setInterval(revisarMensajesNuevos, 10000);
+</script>
 
 </body>
 </html>
