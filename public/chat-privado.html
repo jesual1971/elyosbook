@@ -127,28 +127,34 @@
     document.getElementById("destinatarioNombre").innerText = destinatario;
 
     async function cargarMensajes() {
-      try {
-        const res = await fetch(`/api/mensajesPrivados?emisor=${emisor}&receptor=${destinatario}`);
-        const mensajes = await res.json();
+  try {
+    const res = await fetch(`/api/mensajesPrivados?emisor=${emisor}&receptor=${destinatario}`);
+    const mensajes = await res.json();
 
-        chatLog.innerHTML = "";
+    chatLog.innerHTML = "";
 
-        mensajes.forEach(m => {
-          const div = document.createElement("div");
-          div.classList.add("mensaje");
-          div.classList.add(m.emisor === emisor ? "propio" : "ajeno");
-          div.innerHTML = `
-            <p>${m.contenido}</p>
-            <small>${new Date(m.fecha).toLocaleString()}</small>
-          `;
-          chatLog.appendChild(div);
-        });
+    mensajes.forEach(m => {
+      const div = document.createElement("div");
+      div.classList.add("mensaje");
+      div.classList.add(m.emisor === emisor ? "propio" : "ajeno");
 
-        chatLog.scrollTop = chatLog.scrollHeight;
-      } catch (err) {
-        console.error("Error al cargar mensajes:", err);
-      }
-    }
+      const leidoCheck = m.emisor === emisor
+        ? `<small style="color: ${m.leido ? 'lightgreen' : '#aaa'};">${m.leido ? '✔️ Leído' : '✔️ Enviado'}</small>`
+        : "";
+
+      div.innerHTML = `
+        <p>${m.contenido}</p>
+        <small>${new Date(m.fecha).toLocaleString()}</small>
+        ${leidoCheck}
+      `;
+      chatLog.appendChild(div);
+    });
+
+    chatLog.scrollTop = chatLog.scrollHeight;
+  } catch (err) {
+    console.error("Error al cargar mensajes:", err);
+  }
+}
 
     formChat.addEventListener("submit", async (e) => {
       e.preventDefault();
