@@ -151,22 +151,22 @@
   const div = document.createElement("div");
   div.classList.add("user-card");
 
-  const notificacion = user.tieneMensajesNoLeidos ? '🔴' : ''; // ✅ nombre correcto
+  const notificacion = user.tieneMensajes ? '🔴' : ''; // ✅ nombre correcto
 
-  div.innerHTML = `
-    <img src="${user.avatar || 'img/default-avatar.png'}" alt="Avatar" style="cursor: pointer;" onclick="ampliarAvatar('${user.avatar || 'img/default-avatar.png'}')">
-    <div class="user-info">
-      <strong style="cursor: pointer; color: #f1c40f;" onclick="verPerfil('${user.usuario}')">${user.nombre} ${user.apellido}</strong><br>
-      <span ${user.tieneMensajesNoLeidos ? '' : 'style="display:none;"'}> 🔴</span>
-      <small>@${user.usuario}</small>
-    </div>
-    <div class="user-actions">
-      <button onclick="${esAmigo ? `eliminarAmigo('${user.usuario}')` : `enviarSolicitud('${user.usuario}')`}">
-        ${esAmigo ? 'Eliminar amigo' : 'Agregar amigo'}
-      </button>
-      <button onclick="iniciarChatPrivado('${user.usuario}')">${notificacion} 💬 Chatear</button>
-    </div>
-  `;
+div.innerHTML = `
+  <img src="${user.avatar || 'img/default-avatar.png'}" alt="Avatar" style="cursor: pointer;" onclick="ampliarAvatar('${user.avatar || 'img/default-avatar.png'}')">
+  <div class="user-info">
+    <strong style="cursor: pointer; color: #f1c40f;" onclick="verPerfil('${user.usuario}')">${user.nombre} ${user.apellido}</strong><br>
+    <span ${user.tieneMensajes ? '' : 'style="display:none;"'}> 🔴</span>
+    <small>@${user.usuario}</small>
+  </div>
+  <div class="user-actions">
+    <button onclick="${esAmigo ? `eliminarAmigo('${user.usuario}')` : `enviarSolicitud('${user.usuario}')`}">
+      ${esAmigo ? 'Eliminar amigo' : 'Agregar amigo'}
+    </button>
+    <button onclick="iniciarChatPrivado('${user.usuario}')">${notificacion} 💬 Chatear</button>
+  </div>
+`;
   return div;
 }
 
