@@ -63,7 +63,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-const almacenamiento = multer.diskStorage({
+const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "public/uploads/");
   },
@@ -72,7 +72,7 @@ const almacenamiento = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage: almacenamiento });
+const upload = multer({ storage }); // ✅ esta línea puede reemplazar la anterior si ya existe
 
 app.post("/api/subir-imagen", upload.single("imagen"), (req, res) => {
   if (!req.file) {
