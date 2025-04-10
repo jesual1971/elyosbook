@@ -257,6 +257,43 @@ app.get("/api/usuarios/:usuario/amigos", async (req, res) => {
   }
 });
 
+// ✅ Obtener lista de amigos con indicador de mensajes no leídos
+app.get("/api/usuarios/:usuario/amigos-con-mensajes", async (req, res) => {
+  try {
+    const { usuario } = req.params;
+
+    const usuarioActual = await Usuario.findOne({ usuario }).populate("amigos");
+
+    if (!usuarioActual) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
+
+    const amigosConMensajes = await Promise.all(
+      usuarioActual.amigos.map(async (amigo) => {
+        const mensajesNoLeidos = await MensajePrivado.countDocuments({
+          emisor: amigo.usuario,
+          receptor: usuario,
+          leido: false
+        });
+
+        return {
+          _id: amigo._id,
+          usuario: amigo.usuario,
+          nombre: amigo.nombre,
+          apellido: amigo.apellido,
+          avatar: amigo.avatar || "img/default-avatar.png",
+          mensajesNuevos: mensajesNoLeidos > 0
+        };
+      })
+    );
+
+    res.json(amigosConMensajes);
+  } catch (error) {
+    console.error("❌ Error al obtener amigos con mensajes:", error);
+    res.status(500).json({ mensaje: "Error del servidor" });
+  }
+});
+
 // ➕ Agregar un amigo
 app.post("/api/usuarios/:usuario/agregar-amigo", async (req, res) => {
   try {
