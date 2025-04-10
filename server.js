@@ -63,6 +63,26 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
+const almacenamiento = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: almacenamiento });
+
+app.post("/api/subir-imagen", upload.single("imagen"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ mensaje: "No se subió ninguna imagen." });
+  }
+
+  const ruta = "/uploads/" + req.file.filename;
+  res.json({ url: ruta });
+});
+
 // 📷 Multer para subir imagen
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {

@@ -124,11 +124,13 @@
       <!-- Mensajes aquí -->
     </div>
 
-    <form class="chat-form" id="formChat">
-      <button type="button" id="emojiBtn">😊</button>
-      <input type="text" id="mensajeInput" placeholder="Escribe un mensaje..." />
-      <button type="submit">Enviar</button>
-    </form>
+    <form class="chat-form" id="formChat" enctype="multipart/form-data">
+  <button type="button" id="emojiBtn">😊</button>
+  <input type="text" id="mensajeInput" placeholder="Escribe un mensaje..." />
+  <input type="file" id="imagenInput" accept="image/*" style="display:none;" />
+  <button type="button" onclick="document.getElementById('imagenInput').click()">📷</button>
+  <button type="submit">Enviar</button>
+</form>
   </div>
 
   <script>
@@ -158,10 +160,11 @@
         : "";
 
       div.innerHTML = `
-        <p>${m.contenido}</p>
-        <small>${new Date(m.fecha).toLocaleString()}</small>
-        ${leidoCheck}
-      `;
+  ${m.contenido ? `<p>${m.contenido}</p>` : ""}
+  ${m.imagen ? `<img src="${m.imagen}" style="max-width:200px; border-radius:8px; margin-top:8px;">` : ""}
+  <small>${new Date(m.fecha).toLocaleString()}</small>
+  ${leidoCheck}
+`;
       chatLog.appendChild(div);
     });
 
@@ -173,25 +176,45 @@
 }
 
     formChat.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const contenido = mensajeInput.value.trim();
-      if (!contenido) return;
+  e.preventDefault();
 
-      try {
-        await fetch("/api/mensajesPrivados", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ emisor, receptor: destinatario, contenido })
-        });
+  const contenido = mensajeInput.value.trim();
+  const archivo = document.getElementById("imagenInput").files[0];
 
-        mensajeInput.value = "";
-        cargarMensajes();
-      } catch (err) {
-        console.error("Error al enviar mensaje:", err);
-      }
+  if (!contenido && !archivo) return;
+
+  let rutaImagen = "";
+
+  if (archivo) {
+    const formData = new FormData();
+    formData.append("imagen", archivo);
+
+    const res = await fetch("/api/subir-imagen", {
+      method: "POST",
+      body: formData
     });
+
+    const data = await res.json();
+    rutaImagen = data.url;
+  }
+
+  const cuerpo = {
+    emisor,
+    receptor: destinatario,
+    contenido: contenido || "",
+    imagen: rutaImagen
+  };
+
+  await fetch("/api/mensajesPrivados", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(cuerpo)
+  });
+
+  mensajeInput.value = "";
+  document.getElementById("imagenInput").value = "";
+  cargarMensajes();
+});
 
     document.addEventListener("DOMContentLoaded", () => {
   cargarMensajes();
