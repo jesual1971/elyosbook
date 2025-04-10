@@ -166,6 +166,7 @@
     });
 
     chatLog.scrollTop = chatLog.scrollHeight;
+    marcarMensajesLeidos();
   } catch (err) {
     console.error("Error al cargar mensajes:", err);
   }
