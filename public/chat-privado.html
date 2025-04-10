@@ -96,6 +96,15 @@
       font-weight: bold;
       cursor: pointer;
     }
+
+      /* 🎉 Botón del selector de emojis */
+.chat-form button#emojiBtn {
+  background-color: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
   </style>
 </head>
 <body>
@@ -116,6 +125,7 @@
     </div>
 
     <form class="chat-form" id="formChat">
+      <button type="button" id="emojiBtn">😊</button>
       <input type="text" id="mensajeInput" placeholder="Escribe un mensaje..." />
       <button type="submit">Enviar</button>
     </form>
@@ -206,5 +216,40 @@ async function marcarMensajesLeidos() {
       window.location.href = "index.html";
     }
   </script>
+  <!-- 👇 Este contenedor será donde se muestren los emojis -->
+<div id="emojiPanel" style="display:none; position:absolute; bottom:80px; background:white; border-radius:10px; padding:10px;"></div>
+
+<script>
+  const emojiBtn = document.getElementById("emojiBtn");
+  const emojiPanel = document.getElementById("emojiPanel");
+
+  // Lista básica de emojis
+  const emojis = ["😀","😅","😂","😊","😍","😎","😢","😭","😡","👍","🙏","❤️"];
+
+  emojiBtn.addEventListener("click", () => {
+    emojiPanel.innerHTML = "";
+    emojis.forEach(emoji => {
+      const span = document.createElement("span");
+      span.textContent = emoji;
+      span.style.cursor = "pointer";
+      span.style.fontSize = "24px";
+      span.style.margin = "5px";
+      span.addEventListener("click", () => {
+        mensajeInput.value += emoji;
+        emojiPanel.style.display = "none";
+      });
+      emojiPanel.appendChild(span);
+    });
+    emojiPanel.style.display = "block";
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!emojiPanel.contains(e.target) && e.target.id !== "emojiBtn") {
+      emojiPanel.style.display = "none";
+    }
+  });
+</script>
 </body>
+<!-- Emoji Button Library -->
+<script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.4/dist/index.min.js"></script>
 </html>
