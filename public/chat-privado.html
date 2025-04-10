@@ -171,8 +171,23 @@
       }
     });
 
-    cargarMensajes();
-    setInterval(cargarMensajes, 3000); // Auto refresco cada 3s
+    document.addEventListener("DOMContentLoaded", () => {
+  cargarMensajes();
+  marcarMensajesLeidos(); // ✅ importante para notificaciones
+  setInterval(cargarMensajes, 3000); // Auto refresco cada 3s
+});
+
+async function marcarMensajesLeidos() {
+  try {
+    await fetch("/api/mensajesPrivados/marcar-leidos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ emisor: destinatario, receptor: emisor }) // ✅ corregido
+    });
+  } catch (err) {
+    console.error("❌ Error al marcar como leídos:", err);
+  }
+}
 
     function cerrarSesion() {
       localStorage.removeItem("token");

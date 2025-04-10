@@ -592,6 +592,23 @@ app.post("/api/mensajesPrivados", async (req, res) => {
   }
 });
 
+// ✅ Obtener cantidad de mensajes no leídos para un usuario
+app.get("/api/mensajesPrivados/no-leidos/:usuario", async (req, res) => {
+  try {
+    const { usuario } = req.params;
+
+    const mensajesNoLeidos = await MensajePrivado.find({
+      receptor: usuario,
+      leido: false
+    });
+
+    res.json({ cantidad: mensajesNoLeidos.length });
+  } catch (error) {
+    console.error("❌ Error al obtener mensajes no leídos:", error);
+    res.status(500).json({ mensaje: "Error al obtener mensajes no leídos" });
+  }
+});
+
 // Obtener mensajes entre dos usuarios
 app.get("/api/mensajesPrivados", async (req, res) => {
   try {
@@ -606,6 +623,23 @@ app.get("/api/mensajesPrivados", async (req, res) => {
   } catch (error) {
     console.error("❌ Error al obtener mensajes privados:", error);
     res.status(500).json({ mensaje: "Error al obtener mensajes" });
+  }
+});
+
+// ✅ Marcar mensajes como leídos
+app.post("/api/mensajesPrivados/marcar-leidos", async (req, res) => {
+  try {
+    const { emisor, receptor } = req.body;
+
+    await MensajePrivado.updateMany(
+      { emisor, receptor, leido: false },
+      { $set: { leido: true } }
+    );
+
+    res.json({ mensaje: "Mensajes marcados como leídos" });
+  } catch (error) {
+    console.error("❌ Error al marcar mensajes como leídos:", error);
+    res.status(500).json({ mensaje: "Error al actualizar mensajes" });
   }
 });
 
