@@ -452,10 +452,10 @@ app.get("/api/usuarios/:usuario/solicitudes", async (req, res) => {
 app.post("/api/usuarios/:usuario/aceptar-amigo", async (req, res) => {
   try {
     const { usuario } = req.params;
-    const { amigoUsuario } = req.body;
+    const { idAmigo } = req.body;
 
     const user = await Usuario.findOne({ usuario });
-    const amigo = await Usuario.findOne({ usuario: amigoUsuario });
+    const amigo = await Usuario.findById(idAmigo);
 
     if (!user || !amigo) {
       return res.status(404).json({ mensaje: "Usuario no encontrado" });
@@ -468,12 +468,15 @@ app.post("/api/usuarios/:usuario/aceptar-amigo", async (req, res) => {
       amigo.amigos.push(user._id);
     }
 
-    // Quitar solicitud
-    user.solicitudes = user.solicitudes.filter(s => s !== amigoUsuario);
+    // Quitar la solicitud (comparando ObjectId como strings)
+    user.solicitudes = user.solicitudes.filter(
+      s => s.toString() !== amigo._id.toString()
+    );
 
     await user.save();
     await amigo.save();
 
+    console.log(`✅ Amistad confirmada entre ${usuario} y ${amigo.usuario}`);
     res.json({ mensaje: "Amistad confirmada" });
   } catch (error) {
     console.error("❌ Error al aceptar solicitud:", error);

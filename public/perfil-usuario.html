@@ -363,7 +363,7 @@ async function cargarSolicitudes() {
   }
 }
 
-async function aceptarSolicitud(amigoUsuario) {
+async function aceptarSolicitud(idAmigo) {
   const token = localStorage.getItem("token");
   const miUsuario = localStorage.getItem("usuario");
 
@@ -374,18 +374,19 @@ async function aceptarSolicitud(amigoUsuario) {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       },
-      body: JSON.stringify({ idAmigo: amigoUsuario })
+      body: JSON.stringify({ idAmigo }) // ← ya está bien
     });
 
     const data = await res.json();
     alert(data.mensaje);
-    cargarSolicitudes(); // recarga la lista
+    cargarSolicitudes();
   } catch (err) {
-    console.error("Error aceptando solicitud:", err);
+    console.error("❌ Error aceptando solicitud:", err);
   }
 }
 
 document.addEventListener("DOMContentLoaded", cargarSolicitudes);
+
 </script>
 
 </body>
