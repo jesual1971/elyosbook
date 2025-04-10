@@ -645,7 +645,7 @@ app.post("/api/mensajesPrivados/marcar-leidos", async (req, res) => {
 
 // ✅ Agrega este endpoint en server.js
 
-app.get("/api/mensajesPrivados/no-leidos/:usuario", async (req, res) => {
+app.get("/api/mensajesPrivados/nuevos/:usuario", async (req, res) => {
   try {
     const { usuario } = req.params;
 
@@ -654,7 +654,7 @@ app.get("/api/mensajesPrivados/no-leidos/:usuario", async (req, res) => {
       leido: false
     });
 
-    res.json({ cantidad: mensajesNoLeidos.length });
+    res.json({ nuevos: mensajesNoLeidos.length }); // <- importante: usa la clave "nuevos"
   } catch (error) {
     console.error("❌ Error al obtener mensajes no leídos:", error);
     res.status(500).json({ mensaje: "Error al contar mensajes no leídos" });

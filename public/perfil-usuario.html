@@ -392,9 +392,11 @@ document.addEventListener("DOMContentLoaded", cargarSolicitudes);
 
 </script>
 <audio id="sonidoMensaje" src="sounds/notificacion.mp3" preload="auto"></audio>
+<span id="notificacion-icono" style="display:none; color: yellow;">🔔</span>
 
 <script>
   const miUsuario = localStorage.getItem("usuario");
+  let ultimaCantidad = 0;
 
   async function revisarMensajesNuevos() {
     try {
@@ -402,19 +404,32 @@ document.addEventListener("DOMContentLoaded", cargarSolicitudes);
       const data = await res.json();
 
       const icono = document.getElementById("notificacion-icono");
+
       if (data.nuevos > 0) {
         if (icono) icono.style.display = "inline";
-        const sonido = document.getElementById("sonidoMensaje");
-        if (sonido) sonido.play().catch(() => {});
+
+        // Si hay más mensajes que la vez anterior: reproducir sonido
+        if (data.nuevos > ultimaCantidad) {
+          const sonido = document.getElementById("sonidoMensaje");
+          if (sonido) sonido.play().catch(() => {});
+        }
+
+        ultimaCantidad = data.nuevos;
       } else {
         if (icono) icono.style.display = "none";
+        ultimaCantidad = 0;
       }
     } catch (err) {
       console.error("❌ Error revisando mensajes nuevos:", err);
     }
   }
 
-  setInterval(revisarMensajesNuevos, 10000);
+  setInterval(revisarMensajesNuevos, 10000); // cada 10s
+  // 👇 Este es el que faltaba
+  document.getElementById("notificacion-icono").addEventListener("click", () => {
+    document.getElementById("notificacion-icono").style.display = "none";
+    window.location.href = "amigos.html";
+  });
 </script>
 
 </body>
