@@ -48,27 +48,33 @@
     }
 
     .mensaje {
-      margin-bottom: 12px;
-      padding: 8px 12px;
-      border-radius: 10px;
-    }
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  max-width: 75%;
+  position: relative;
+}
 
     .mensaje.propio {
-  background-color: #f8f6f2;  /* perla */
-  color: #000000;             /* texto negro */
+  background-color: #e6e6e6; /* color perla */
+  color: #111111;
   text-align: right;
+  align-self: flex-end;
 }
 
     .mensaje.ajeno {
-  background-color: #f8f6f2;  /* perla */
-  color: #000000;             /* texto negro */
+  background-color: #2e3a4a; /* gris oscuro */
+  color: #ffffff;
+  text-align: left;
+  align-self: flex-start;
 }
 
     .mensaje small {
-      display: block;
-      font-size: 12px;
-      color: #ccc;
-    }
+  display: block;
+  font-size: 12px;
+  margin-top: 4px;
+  color: #bbbbbb; /* hora y fecha */
+}
 
     .chat-form {
       display: flex;
