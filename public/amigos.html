@@ -157,6 +157,7 @@
     <img src="${user.avatar || 'img/default-avatar.png'}" alt="Avatar" style="cursor: pointer;" onclick="ampliarAvatar('${user.avatar || 'img/default-avatar.png'}')">
     <div class="user-info">
       <strong style="cursor: pointer; color: #f1c40f;" onclick="verPerfil('${user.usuario}')">${user.nombre} ${user.apellido}</strong><br>
+      <span ${user.tieneMensajes ? '' : 'style="display:none;"'}> 🔴</span>
       <small>@${user.usuario}</small>
     </div>
     <div class="user-actions">
