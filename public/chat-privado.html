@@ -297,7 +297,7 @@ async function marcarMensajesLeidos() {
     const reader = new FileReader();
     reader.onload = function(e) {
       previewImagen.src = e.target.result;
-      document.getElementById("previewContenedor").style.display = "block"; // 👈 mostramos el contenedor completo
+      previewImagen.style.display = "block";
     };
     reader.readAsDataURL(archivo);
   }
@@ -306,7 +306,7 @@ async function marcarMensajesLeidos() {
 // 👇 función para quitar imagen seleccionada
 function quitarImagen() {
   document.getElementById("imagenInput").value = "";
-  document.getElementById("previewContenedor").style.display = "none";
+  previewImagen.style.display = "none";
 }
 </script>
 </body>
