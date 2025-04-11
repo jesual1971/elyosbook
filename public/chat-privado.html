@@ -228,8 +228,9 @@ await fetch("/api/mensajesPrivados", {
 });
 
   mensajeInput.value = "";
-  document.getElementById("imagenInput").value = "";
-  cargarMensajes();
+document.getElementById("imagenInput").value = "";
+document.getElementById("previewImagen").style.display = "none"; // ✅ Limpia la vista previa
+cargarMensajes();
 });
 
     document.addEventListener("DOMContentLoaded", () => {

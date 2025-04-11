@@ -709,6 +709,27 @@ app.post("/api/mensajesPrivados/marcar-leidos", async (req, res) => {
   }
 });
 
+app.post("/api/mensajesPrivados", async (req, res) => {
+  try {
+    const { emisor, receptor, contenido, imagen } = req.body;
+
+    const nuevoMensaje = new MensajePrivado({
+      emisor,
+      receptor,
+      contenido: contenido || "", // evita fallo si es solo imagen
+      imagen: imagen || "",       // campo opcional
+      fecha: new Date(),
+      leido: false
+    });
+
+    await nuevoMensaje.save();
+    res.json({ mensaje: "Mensaje enviado", mensajeId: nuevoMensaje._id });
+  } catch (error) {
+    console.error("❌ Error al enviar mensaje privado:", error);
+    res.status(500).json({ mensaje: "Error al enviar mensaje privado" });
+  }
+});
+
 // ✅ Agrega este endpoint en server.js
 
 app.get("/api/mensajesPrivados/nuevos/:usuario", async (req, res) => {
