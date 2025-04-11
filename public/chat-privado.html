@@ -213,17 +213,19 @@
 }
 
   const cuerpo = {
-    emisor,
-    receptor: destinatario,
-    contenido: contenido || "",
-    imagen: rutaImagen
-  };
+  emisor,
+  receptor: destinatario,
+  contenido: contenido || "",
+  imagen: rutaImagen
+};
 
-  await fetch("/api/mensajesPrivados", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(cuerpo)
-  });
+console.log("📤 Cuerpo del mensaje:", cuerpo); // 👈 Agrega esto
+
+await fetch("/api/mensajesPrivados", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(cuerpo)
+});
 
   mensajeInput.value = "";
   document.getElementById("imagenInput").value = "";
