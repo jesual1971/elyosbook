@@ -128,6 +128,7 @@
   <button type="button" id="emojiBtn">😊</button>
   <input type="text" id="mensajeInput" placeholder="Escribe un mensaje..." />
   <input type="file" id="imagenInput" name="imagen" accept="image/*" style="display:none;" />
+  <img id="previewImagen" style="max-width: 200px; display:none; margin-top:10px;" />
   <button type="button" onclick="document.getElementById('imagenInput').click()">📷</button>
   <button type="submit">Enviar</button>
 </form>
@@ -270,6 +271,22 @@ async function marcarMensajesLeidos() {
   document.addEventListener("click", (e) => {
     if (!emojiPanel.contains(e.target) && e.target.id !== "emojiBtn") {
       emojiPanel.style.display = "none";
+    }
+  });
+</script>
+<script>
+  const imagenInput = document.getElementById("imagenInput");
+  const previewImagen = document.getElementById("previewImagen");
+
+  imagenInput.addEventListener("change", () => {
+    const archivo = imagenInput.files[0];
+    if (archivo) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        previewImagen.src = e.target.result;
+        previewImagen.style.display = "block";
+      };
+      reader.readAsDataURL(archivo);
     }
   });
 </script>
