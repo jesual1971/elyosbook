@@ -128,7 +128,8 @@
   <button type="button" id="emojiBtn">😊</button>
   <input type="text" id="mensajeInput" placeholder="Escribe un mensaje..." />
   <input type="file" id="imagenInput" name="imagen" accept="image/*" style="display:none;" />
-  <img id="previewImagen" style="max-width: 150px; max-height: 120px; display:none; margin: 10px auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.4);" />
+  <button type="button" onclick="quitarImagen()" style="margin-left:10px;">❌ Quitar imagen</button>
+  <img id="previewImagen" style="max-width: 75px; max-height: 50px; display:none; margin: 10px auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.4);" />
   <button type="button" onclick="document.getElementById('imagenInput').click()">📷</button>
   <button type="submit">Enviar</button>
 </form>
@@ -291,16 +292,22 @@ async function marcarMensajesLeidos() {
   const previewImagen = document.getElementById("previewImagen");
 
   imagenInput.addEventListener("change", () => {
-    const archivo = imagenInput.files[0];
-    if (archivo) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        previewImagen.src = e.target.result;
-        previewImagen.style.display = "block";
-      };
-      reader.readAsDataURL(archivo);
-    }
-  });
+  const archivo = imagenInput.files[0];
+  if (archivo) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      previewImagen.src = e.target.result;
+      document.getElementById("previewContenedor").style.display = "block"; // 👈 mostramos el contenedor completo
+    };
+    reader.readAsDataURL(archivo);
+  }
+});
+
+// 👇 función para quitar imagen seleccionada
+function quitarImagen() {
+  document.getElementById("imagenInput").value = "";
+  document.getElementById("previewContenedor").style.display = "none";
+}
 </script>
 </body>
 <!-- Emoji Button Library -->
