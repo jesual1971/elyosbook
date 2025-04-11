@@ -155,35 +155,59 @@
   });
 
   document.addEventListener("DOMContentLoaded", () => {
-    const btn = document.getElementById("preguntarBtn");
-    const input = document.getElementById("pregunta");
-    const respuestaDiv = document.getElementById("respuesta");
+  const btn = document.getElementById("preguntarBtn");
+  const input = document.getElementById("pregunta");
+  const respuestaDiv = document.getElementById("respuesta");
+  const profeciaBtn = document.getElementById("profeciaBtn"); // ✅ añadimos esto aquí
 
-    btn.addEventListener("click", async () => {
-      const pregunta = input.value.trim();
-      if (!pregunta) {
-        respuestaDiv.innerText = "⚠️ Escribe una pregunta primero.";
-        return;
-      }
+  // 🔁 Evento al hacer clic en "Preguntar"
+  btn.addEventListener("click", async () => {
+    const pregunta = input.value.trim();
+    if (!pregunta) {
+      respuestaDiv.innerText = "⚠️ Escribe una pregunta primero.";
+      return;
+    }
 
-      respuestaDiv.innerText = "⏳ Consultando al Oráculo de Elyos...";
+    respuestaDiv.innerText = "⏳ Consultando al Oráculo de Elyos...";
 
-      try {
-        const res = await fetch("/ia-oraculo", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ pregunta })
-        });
+    try {
+      const res = await fetch("/ia-oraculo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pregunta })
+      });
 
-        const data = await res.json();
-        respuestaDiv.innerText = data.respuesta;
-        input.value = ""; // ✅ Limpiar campo después de preguntar
-      } catch (error) {
-        console.error("Error:", error);
-        respuestaDiv.innerText = "❌ Error al contactar con Elyos IA.";
-      }
-    });
+      const data = await res.json();
+      respuestaDiv.innerText = data.respuesta;
+      input.value = ""; // ✅ Limpiar campo después de preguntar
+    } catch (error) {
+      console.error("Error:", error);
+      respuestaDiv.innerText = "❌ Error al contactar con Elyos IA.";
+    }
   });
+
+  // 🔮 Evento al hacer clic en "Recibir Profecía del Día"
+  profeciaBtn.addEventListener("click", async () => {
+    console.log("🔮 Botón de profecía clicado"); // ✅ solo para prueba
+    respuestaDiv.innerText = "⏳ Invocando la profecía de Elyos...";
+
+    try {
+      const res = await fetch("/ia-oraculo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pregunta: "Dame una revelación sagrada para hoy"
+        })
+      });
+
+      const data = await res.json();
+      respuestaDiv.innerText = data.respuesta;
+    } catch (error) {
+      console.error("Error al obtener profecía:", error);
+      respuestaDiv.innerText = "❌ No se pudo recibir la profecía hoy. Intenta más tarde.";
+    }
+  });
+});
 </script>
 </body>
 </html>
