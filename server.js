@@ -75,6 +75,7 @@ const almacenamientoImagenes = multer.diskStorage({
 const subirImagen = multer({ storage: almacenamientoImagenes });
 
 app.post("/api/subir-imagen", subirImagen.single("imagen"), (req, res) => {
+console.log("📥 Imagen recibida:", req.file); // 👈 AGREGA ESTA LÍNEA
   if (!req.file) {
     return res.status(400).json({ mensaje: "No se subió ninguna imagen." });
   }
