@@ -168,7 +168,7 @@
       respuestaDiv.innerText = "⏳ Consultando al Oráculo de Elyos...";
 
       try {
-        const res = await fetch("/preguntar", {
+        const res = await fetch("/ia-oraculo", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ pregunta })
@@ -176,6 +176,7 @@
 
         const data = await res.json();
         respuestaDiv.innerText = data.respuesta;
+        input.value = ""; // ✅ Limpiar campo después de preguntar
       } catch (error) {
         console.error("Error:", error);
         respuestaDiv.innerText = "❌ Error al contactar con Elyos IA.";
@@ -183,7 +184,6 @@
     });
   });
 </script>
-
 </body>
 </html>
 
