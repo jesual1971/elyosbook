@@ -18,6 +18,14 @@ const http = require("http");
 const { Server } = require("socket.io");
 
 const app = express();
+const fs = require("fs");
+const rutaUploads = path.join(__dirname, "public", "uploads");
+
+// 🔁 Verifica si la carpeta existe, y si no, la crea
+if (!fs.existsSync(rutaUploads)) {
+  fs.mkdirSync(rutaUploads, { recursive: true });
+  console.log("📁 Carpeta 'public/uploads' creada automáticamente");
+}
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
