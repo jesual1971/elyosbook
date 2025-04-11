@@ -187,6 +187,7 @@
   let rutaImagen = "";
 
   if (archivo) {
+  try {
     const formData = new FormData();
     formData.append("imagen", archivo);
 
@@ -195,9 +196,19 @@
       body: formData
     });
 
+    if (!res.ok) {
+      throw new Error("Error subiendo la imagen");
+    }
+
     const data = await res.json();
     rutaImagen = data.url;
+    console.log("✅ Imagen subida:", rutaImagen);
+  } catch (err) {
+    console.error("❌ Error al subir imagen:", err);
+    alert("No se pudo subir la imagen.");
+    return;
   }
+}
 
   const cuerpo = {
     emisor,
