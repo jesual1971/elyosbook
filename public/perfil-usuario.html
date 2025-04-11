@@ -65,6 +65,27 @@
       color: #555;
     }
 
+    .form-foto {
+      display: flex;
+      flex-direction: column;
+      margin-top: 10px;
+    }
+
+    .form-foto label {
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .form-foto button {
+      padding: 6px 12px;
+      background-color: #003f8a;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
     .bio-box {
       margin-top: 20px;
       background-color: #f6f4ff;
@@ -134,7 +155,13 @@
 
   <div class="perfil-container">
     <div class="perfil-header">
-      <img src="img/default-avatar.png" alt="Avatar" id="avatarUsuario">
+      <div>
+        <img src="img/default-avatar.png" alt="Avatar" id="avatarUsuario">
+        <form id="formFoto" class="form-foto" enctype="multipart/form-data">
+          <input type="file" id="fotoPerfil" name="foto" accept="image/*" />
+          <button type="submit">Cambiar foto</button>
+        </form>
+      </div>
       <div class="perfil-info">
         <h2 id="nombreUsuario">Cargando...</h2>
         <p id="fechaMiembro">Miembro desde: ...</p>
@@ -159,6 +186,40 @@
     localStorage.removeItem("usuario");
     window.location.href = "index.html";
   }
+
+  document.getElementById("formFoto").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fileInput = document.getElementById("fotoPerfil");
+    const archivo = fileInput.files[0];
+    if (!archivo) {
+      alert("Selecciona una imagen");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("foto", archivo);
+
+    try {
+      const res = await fetch("/perfil/foto", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token")
+        },
+        body: formData
+      });
+
+      if (res.ok) {
+        const resultado = await res.json();
+        document.getElementById("avatarUsuario").src = resultado.avatar + "?" + Date.now();
+        alert("Foto actualizada correctamente");
+      } else {
+        alert("Error al subir imagen");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Ocurrió un error al subir la imagen");
+    }
+  });
 
   document.addEventListener("DOMContentLoaded", async () => {
     try {
@@ -194,4 +255,3 @@
 </script>
 </body>
 </html>
-
