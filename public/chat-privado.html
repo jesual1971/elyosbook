@@ -128,7 +128,7 @@
   <button type="button" id="emojiBtn">😊</button>
   <input type="text" id="mensajeInput" placeholder="Escribe un mensaje..." />
   <input type="file" id="imagenInput" name="imagen" accept="image/*" style="display:none;" />
-  <img id="previewImagen" style="max-width: 200px; display:none; margin-top:10px;" />
+  <img id="previewImagen" style="max-width: 150px; max-height: 120px; display:none; margin: 10px auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.4);" />
   <button type="button" onclick="document.getElementById('imagenInput').click()">📷</button>
   <button type="submit">Enviar</button>
 </form>
@@ -148,6 +148,7 @@
   try {
     const res = await fetch(`/api/mensajesPrivados?emisor=${emisor}&receptor=${destinatario}`);
     const mensajes = await res.json();
+    console.log("📥 Mensajes cargados:", mensajes);
 
     chatLog.innerHTML = "";
 
