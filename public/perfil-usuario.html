@@ -55,10 +55,28 @@
       border: 3px solid #003f8a;
     }
 
-    .profile-info h2 {
-      margin: 0;
-      font-size: 24px;
-      color: #18335f;
+    .camera-icon img {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .camera-icon {
+      display: inline-block;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    .form-foto button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #003f8a;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
     }
 
     .perfil-tabs {
@@ -124,17 +142,19 @@
 
   <div class="profile-container">
     <div class="profile-header">
-      <img id="avatarUsuario" src="img/default-avatar.png" alt="Foto de perfil">
-      <div class="profile-info">
-        <h2 id="nombreUsuario">Cargando...</h2>
-        <p id="fechaMiembro">Miembro desde: ...</p>
-        <form id="formFoto" enctype="multipart/form-data">
-          <input type="file" id="fotoPerfil" name="foto" accept="image/*" style="display:none">
+      <div class="profile-pic-box" style="position: relative; display: flex; align-items: center; gap: 10px;">
+        <img id="avatarUsuario" src="img/default-avatar.png" alt="Foto de perfil">
+        <form id="formFoto" class="form-foto" enctype="multipart/form-data">
           <label for="fotoPerfil" class="camera-icon">
             <img src="img/camara.png" alt="Subir foto">
           </label>
+          <input type="file" id="fotoPerfil" name="foto" accept="image/*" style="display: none;">
           <button type="submit">Cambiar foto</button>
         </form>
+      </div>
+      <div class="profile-info">
+        <h2 id="nombreUsuario">Cargando...</h2>
+        <p id="fechaMiembro">Miembro desde: ...</p>
       </div>
     </div>
 
@@ -162,102 +182,44 @@
     </div>
   </div>
 
+  <audio id="sonidoMensaje" src="sounds/notificacion.mp3" preload="auto"></audio>
+
   <script>
-    const infoStorageKey = "perfilInfoExtra";
+    const miUsuario = localStorage.getItem("usuario");
+    let ultimaCantidad = 0;
 
-    function mostrarSeccion(nombre) {
-      document.querySelectorAll('.seccion-perfil').forEach(sec => sec.style.display = 'none');
-      document.getElementById(`seccion-${nombre}`).style.display = 'block';
-
-      if (nombre === 'info') cargarInfoExtra();
-    }
-
-    function cargarInfoExtra() {
-      const data = JSON.parse(localStorage.getItem(infoStorageKey)) || null;
-      const container = document.getElementById("infoContent");
-
-      if (!data) {
-        container.innerHTML = getFormularioInfo();
-        return;
-      }
-
-      container.innerHTML = `
-        <p><strong>Ciudad:</strong> ${data.ciudad}</p>
-        <p><strong>País:</strong> ${data.pais}</p>
-        <p><strong>Profesión:</strong> ${data.profesion}</p>
-        <p><strong>Estado Civil:</strong> ${data.estadoCivil}</p>
-        <p><strong>Teléfono:</strong> ${data.telefono}</p>
-        <p><strong>Religión:</strong> ${data.religion}</p>
-        <p><strong>Sobre mí:</strong><br>${data.sobreMi}</p>
-        <button onclick="editarInfoExtra()">Editar información</button>
-      `;
-    }
-
-    function editarInfoExtra() {
-      document.getElementById("infoContent").innerHTML = getFormularioInfo(JSON.parse(localStorage.getItem(infoStorageKey)));
-    }
-
-    function guardarInfoExtra(e) {
-      e.preventDefault();
-      const form = e.target;
-      const data = {
-        ciudad: form.ciudad.value,
-        pais: form.pais.value,
-        profesion: form.profesion.value,
-        estadoCivil: form.estadoCivil.value,
-        telefono: form.telefono.value,
-        religion: form.religion.value,
-        sobreMi: form.sobreMi.value
-      };
-      localStorage.setItem(infoStorageKey, JSON.stringify(data));
-      cargarInfoExtra();
-    }
-
-    function getFormularioInfo(data = {}) {
-      return `
-        <form class="info-form" onsubmit="guardarInfoExtra(event)">
-          <input type="text" name="ciudad" placeholder="Ciudad" value="${data.ciudad || ''}">
-          <input type="text" name="pais" placeholder="País" value="${data.pais || ''}">
-          <input type="text" name="profesion" placeholder="Profesión" value="${data.profesion || ''}">
-          <select name="estadoCivil">
-            <option value="">Estado Civil</option>
-            <option value="Soltero" ${data.estadoCivil === 'Soltero' ? 'selected' : ''}>Soltero</option>
-            <option value="Casado" ${data.estadoCivil === 'Casado' ? 'selected' : ''}>Casado</option>
-            <option value="Otro" ${data.estadoCivil === 'Otro' ? 'selected' : ''}>Otro</option>
-          </select>
-          <input type="text" name="telefono" placeholder="Teléfono" value="${data.telefono || ''}">
-          <input type="text" name="religion" placeholder="Religión" value="${data.religion || ''}">
-          <textarea name="sobreMi" placeholder="Sobre mí...">${data.sobreMi || ''}</textarea>
-          <button type="submit">Guardar</button>
-        </form>
-      `;
-    }
-
-    async function cargarDatosPerfil() {
+    async function revisarMensajesNuevos() {
       try {
-        const token = localStorage.getItem("token");
-        const res = await fetch("/api/mi-perfil", {
-          headers: { Authorization: "Bearer " + token }
-        });
+        const res = await fetch(`/api/mensajesPrivados/nuevos/${miUsuario}`);
         const data = await res.json();
 
-        if (res.ok) {
-          document.getElementById("nombreUsuario").textContent = data.usuario || "Usuario";
-          if (data.avatar) {
-            document.getElementById("avatarUsuario").src = data.avatar + "?" + Date.now();
+        const icono = document.getElementById("notificacion-icono");
+
+        if (data.nuevos > 0) {
+          icono.style.display = "inline";
+
+          if (data.nuevos > ultimaCantidad) {
+            const sonido = document.getElementById("sonidoMensaje");
+            sonido.play().catch(() => {});
           }
-          if (data.creadoEn) {
-            const fecha = new Date(data.creadoEn);
-            const opciones = { year: "numeric", month: "long" };
-            document.getElementById("fechaMiembro").textContent = "Miembro desde: " + fecha.toLocaleDateString("es-ES", opciones);
-          }
+
+          ultimaCantidad = data.nuevos;
+        } else {
+          icono.style.display = "none";
+          ultimaCantidad = 0;
         }
       } catch (err) {
-        console.error("Error al cargar perfil:", err);
+        console.error("❌ Error revisando mensajes nuevos:", err);
       }
     }
 
-    document.addEventListener("DOMContentLoaded", cargarDatosPerfil);
+    setInterval(revisarMensajesNuevos, 10000);
+
+    document.getElementById("notificacion-icono").addEventListener("click", () => {
+      document.getElementById("notificacion-icono").style.display = "none";
+      window.location.href = "amigos.html";
+    });
   </script>
 </body>
 </html>
+
