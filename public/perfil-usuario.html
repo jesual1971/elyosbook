@@ -201,9 +201,6 @@
   <span id="notificacion-icono" style="display:none; color: yellow;">🔔</span>
 
   <script>
-    // Aquí siguen los scripts existentes
-  </script>
-  <script>
   const miUsuario = localStorage.getItem("usuario");
   let ultimaCantidad = 0;
 
@@ -240,6 +237,37 @@
     document.getElementById("notificacion-icono").style.display = "none";
     window.location.href = "amigos.html";
   });
+</script>
+<script>
+  async function cargarDatosPerfil() {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("/api/mi-perfil", {
+        headers: { Authorization: "Bearer " + token }
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        document.getElementById("nombreUsuario").textContent = data.usuario || "Usuario";
+        if (data.creadoEn) {
+          const fecha = new Date(data.creadoEn);
+          const opciones = { year: "numeric", month: "long" };
+          const fechaFormateada = fecha.toLocaleDateString("es-ES", opciones);
+          document.getElementById("fechaMiembro").textContent = "Miembro desde: " + fechaFormateada;
+        }
+
+        if (data.avatar) {
+          document.getElementById("avatarUsuario").src = data.avatar + "?" + Date.now(); // forzar refresco
+        }
+      } else {
+        console.error("No se pudo cargar perfil:", data);
+      }
+    } catch (err) {
+      console.error("❌ Error al cargar perfil:", err);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", cargarDatosPerfil);
 </script>
 </body>
 </html>
