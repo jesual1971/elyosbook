@@ -240,36 +240,51 @@
 </script>
 <script>
   async function cargarDatosPerfil() {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("/api/mi-perfil", {
-        headers: { Authorization: "Bearer " + token }
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        document.getElementById("nombreUsuario").textContent = data.usuario || "Usuario";
-        if (data.creadoEn) {
-          const fecha = new Date(data.creadoEn);
-          const opciones = { year: "numeric", month: "long" };
-          const fechaFormateada = fecha.toLocaleDateString("es-ES", opciones);
-          document.getElementById("fechaMiembro").textContent = "Miembro desde: " + fechaFormateada;
-        }
-
-        if (data.avatar) {
-  const avatarImg = document.getElementById("avatarUsuario");
-  avatarImg.src = data.avatar + "?" + Date.now(); // mantener el forzado de refresco
-
-  avatarImg.onerror = () => {
-    avatarImg.src = "img/default-avatar.png";
-  };
-} else {
-  document.getElementById("avatarUsuario").src = "img/default-avatar.png";
-}
-    } catch (err) {
-      console.error("❌ Error al cargar perfil:", err);
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("⛔ No hay token de sesión");
+      return;
     }
+
+    const res = await fetch("/api/mi-perfil", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const data = await res.json();
+    console.log("📦 Datos perfil:", data); // 👈 Útil para debug
+
+    if (!res.ok) {
+      console.error("⚠️ No se pudo cargar el perfil:", data?.mensaje || res.statusText);
+      return;
+    }
+
+    // ✅ Nombre
+    document.getElementById("nombreUsuario").textContent = data.usuario || "Usuario";
+
+    // ✅ Fecha
+    if (data.creadoEn) {
+      const fecha = new Date(data.creadoEn);
+      const opciones = { year: "numeric", month: "long" };
+      const fechaFormateada = fecha.toLocaleDateString("es-ES", opciones);
+      document.getElementById("fechaMiembro").textContent =
+        "Miembro desde: " + fechaFormateada;
+    }
+
+    // ✅ Avatar
+    const avatarImg = document.getElementById("avatarUsuario");
+    if (data.avatar) {
+      avatarImg.src = data.avatar + "?" + Date.now(); // Forzar refresco
+      avatarImg.onerror = () => {
+        avatarImg.src = "img/default-avatar.png";
+      };
+    } else {
+      avatarImg.src = "img/default-avatar.png";
+    }
+  } catch (err) {
+    console.error("❌ Error al cargar perfil:", err);
   }
+}
 
   document.addEventListener("DOMContentLoaded", cargarDatosPerfil);
 </script>
