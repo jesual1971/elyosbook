@@ -255,5 +255,50 @@
 
     document.addEventListener("DOMContentLoaded", cargarDatosPerfil);
   </script>
+  <script>
+  document.getElementById("formFoto").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const fileInput = document.getElementById("fotoPerfil");
+    const archivo = fileInput.files[0];
+
+    if (!archivo) {
+      alert("Por favor selecciona una imagen.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("foto", archivo);
+
+    try {
+      const res = await fetch("/perfil/foto", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token")
+        },
+        body: formData
+      });
+
+      if (res.ok) {
+        const resultado = await res.json();
+        alert("Foto actualizada correctamente");
+        document.getElementById("avatarUsuario").src = resultado.avatar + "?" + Date.now();
+      } else {
+        alert("❌ Error al subir la imagen");
+      }
+    } catch (err) {
+      console.error("❌ Error en subida:", err);
+      alert("❌ Ocurrió un error al subir la foto");
+    }
+  });
+
+  function mostrarSeccion(nombre) {
+    document.querySelectorAll(".seccion-perfil").forEach(seccion => {
+      seccion.style.display = "none";
+    });
+    const activa = document.getElementById(`seccion-${nombre}`);
+    if (activa) activa.style.display = "block";
+  }
+</script>
 </body>
 </html>
