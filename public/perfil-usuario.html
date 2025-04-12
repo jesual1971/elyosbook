@@ -134,6 +134,21 @@
       <button onclick="mostrarSeccion('videos')">🎥 Mis Videos</button>
       <button onclick="mostrarSeccion('info')">ℹ️ Información</button>
     </div>
+
+    <div id="seccion-fotos" class="seccion-perfil" style="display:none; margin-top: 20px;">
+      <h3>📁 Mis Fotos</h3>
+      <p>Aquí se mostrarán las fotos que has subido.</p>
+    </div>
+
+    <div id="seccion-videos" class="seccion-perfil" style="display:none; margin-top: 20px;">
+      <h3>🎥 Mis Videos</h3>
+      <p>Aquí se mostrarán los videos.</p>
+    </div>
+
+    <div id="seccion-info" class="seccion-perfil" style="display:none; margin-top: 20px;">
+      <h3>ℹ️ Información</h3>
+      <p>Esta es tu área de descripción personal o datos que quieras compartir.</p>
+    </div>
   </div>
 
   <audio id="sonidoMensaje" src="sounds/notificacion.mp3" preload="auto"></audio>
@@ -241,12 +256,17 @@
     }
 
     function mostrarSeccion(nombre) {
-      alert(`Sección: ${nombre}`); // Esto es solo para mostrar el clic
+      const secciones = ["fotos", "videos", "info"];
+      secciones.forEach(sec => {
+        const div = document.getElementById(`seccion-${sec}`);
+        if (div) div.style.display = (sec === nombre) ? "block" : "none";
+      });
     }
 
     document.addEventListener("DOMContentLoaded", cargarDatosPerfil);
   </script>
 </body>
 </html>
+
 
 
