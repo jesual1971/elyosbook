@@ -352,6 +352,80 @@
     }
   }
 </script>
+<script>
+  const infoStorageKey = "perfilInfoExtra";
+
+  function mostrarSeccion(nombre) {
+    document.querySelectorAll('.seccion-perfil').forEach(sec => sec.style.display = 'none');
+    const activa = document.getElementById(`seccion-${nombre}`);
+    if (activa) {
+      activa.style.display = 'block';
+      if (nombre === 'info') cargarInfoExtra();
+    }
+  }
+
+  function cargarInfoExtra() {
+    const data = JSON.parse(localStorage.getItem(infoStorageKey));
+    const container = document.getElementById("infoContent");
+
+    if (!data) {
+      container.innerHTML = getFormularioInfo();
+      return;
+    }
+
+    container.innerHTML = `
+      <p><strong>Ciudad:</strong> ${data.ciudad}</p>
+      <p><strong>País:</strong> ${data.pais}</p>
+      <p><strong>Profesión:</strong> ${data.profesion}</p>
+      <p><strong>Estado Civil:</strong> ${data.estadoCivil}</p>
+      <p><strong>Teléfono:</strong> ${data.telefono}</p>
+      <p><strong>Religión:</strong> ${data.religion}</p>
+      <p><strong>Sobre mí:</strong><br>${data.sobreMi}</p>
+      <button onclick="editarInfoExtra()">Editar información</button>
+    `;
+  }
+
+  function editarInfoExtra() {
+    const data = JSON.parse(localStorage.getItem(infoStorageKey));
+    document.getElementById("infoContent").innerHTML = getFormularioInfo(data);
+  }
+
+  function guardarInfoExtra(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = {
+      ciudad: form.ciudad.value,
+      pais: form.pais.value,
+      profesion: form.profesion.value,
+      estadoCivil: form.estadoCivil.value,
+      telefono: form.telefono.value,
+      religion: form.religion.value,
+      sobreMi: form.sobreMi.value
+    };
+    localStorage.setItem(infoStorageKey, JSON.stringify(data));
+    cargarInfoExtra();
+  }
+
+  function getFormularioInfo(data = {}) {
+    return `
+      <form class="info-form" onsubmit="guardarInfoExtra(event)">
+        <input type="text" name="ciudad" placeholder="Ciudad" value="${data.ciudad || ''}">
+        <input type="text" name="pais" placeholder="País" value="${data.pais || ''}">
+        <input type="text" name="profesion" placeholder="Profesión" value="${data.profesion || ''}">
+        <select name="estadoCivil">
+          <option value="">Estado Civil</option>
+          <option value="Soltero" ${data.estadoCivil === 'Soltero' ? 'selected' : ''}>Soltero</option>
+          <option value="Casado" ${data.estadoCivil === 'Casado' ? 'selected' : ''}>Casado</option>
+          <option value="Otro" ${data.estadoCivil === 'Otro' ? 'selected' : ''}>Otro</option>
+        </select>
+        <input type="text" name="telefono" placeholder="Teléfono" value="${data.telefono || ''}">
+        <input type="text" name="religion" placeholder="Religión" value="${data.religion || ''}">
+        <textarea name="sobreMi" placeholder="Sobre mí...">${data.sobreMi || ''}</textarea>
+        <button type="submit">Guardar</button>
+      </form>
+    `;
+  }
+</script>
 
 </body>
 </html>
