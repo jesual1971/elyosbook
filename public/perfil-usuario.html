@@ -300,5 +300,58 @@
     if (activa) activa.style.display = "block";
   }
 </script>
+<script>
+  document.getElementById("formFoto").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const archivo = document.getElementById("fotoPerfil").files[0];
+    if (!archivo) {
+      alert("Selecciona una imagen primero.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("foto", archivo);
+
+    try {
+      const res = await fetch("/perfil/foto", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token")
+        },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (res.ok && data.avatar) {
+        document.getElementById("avatarUsuario").src = data.avatar + "?" + Date.now();
+        alert("✅ Foto subida correctamente");
+      } else {
+        alert("❌ Error al subir foto: " + (data.mensaje || "intenta de nuevo"));
+      }
+    } catch (err) {
+      console.error("❌ Error al subir foto:", err);
+      alert("❌ Error en la conexión");
+    }
+  });
+</script>
+<script>
+  function mostrarSeccion(nombre) {
+    document.querySelectorAll(".seccion-perfil").forEach(seccion => {
+      seccion.style.display = "none";
+    });
+
+    const activa = document.getElementById(`seccion-${nombre}`);
+    if (activa) {
+      activa.style.display = "block";
+      if (nombre === "info") {
+        document.getElementById("infoContent").innerHTML = `
+          <p><strong>Este es tu espacio personal de información.</strong><br>
+          Pronto podrás completarlo con tus datos como ciudad, profesión y más.</p>
+        `;
+      }
+    }
+  }
+</script>
+
 </body>
 </html>
