@@ -106,6 +106,20 @@
 <body>
 
 <header style="background-color: #1c2d44; padding: 12px 20px; display: flex; justify-content: flex-end; align-items: center; position: fixed; top: 0; width: 100%; z-index: 999;">
+<button id="abrirSidebar" style="position: fixed; top: 15px; left: 20px; background-color: #003f8a; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; z-index: 1001;">
+  🌟 Más
+</button>
+<div id="sidebarInfo" style="position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background-color: #1c2d44; color: white; padding: 20px; transition: left 0.3s ease; z-index: 1000;">
+  <h2 style="margin-top: 60px;">🌟 Bienvenido, viajero</h2>
+  <p>Este santuario digital no contiene publicidad ni vende tus datos.</p>
+  <p>Tu contribución ayuda a mantener este espacio sagrado vivo.</p>
+
+  <button onclick="window.location.href='apoyo.html'" style="margin-top: 20px; width: 100%; background-color: #27ae60; border: none; padding: 10px; color: white; font-weight: bold; border-radius: 6px;">💖 Apoyar</button>
+  <button onclick="window.location.href='comprar-libro.html'" style="margin-top: 10px; width: 100%; background-color: #8e44ad; border: none; padding: 10px; color: white; font-weight: bold; border-radius: 6px;">📖 Comprar Libro</button>
+
+  <hr style="margin: 20px 0; border-color: #444;">
+  <p style="font-size: 13px; color: #ccc;">Tu viaje es sagrado. Gracias por estar aquí.</p>
+</div>
   <button onclick="toggleMenu()" style="background-color: #003f8a; color: white; font-weight: bold; padding: 8px 16px; border: none; border-radius: 5px; cursor: pointer; margin-right: 50px;">
     ☰ Menú
   </button>
@@ -209,6 +223,22 @@
   });
 });
 </script>
+<script>
+  const sidebar = document.getElementById("sidebarInfo");
+  const botonSidebar = document.getElementById("abrirSidebar");
+
+  botonSidebar.addEventListener("click", () => {
+    sidebar.style.left = sidebar.style.left === "0px" ? "-320px" : "0px";
+  });
+
+  // Opcional: cerrar sidebar si se hace clic fuera de él
+  document.addEventListener("click", (e) => {
+    if (!sidebar.contains(e.target) && e.target !== botonSidebar) {
+      sidebar.style.left = "-320px";
+    }
+  });
+</script>
+
 </body>
 </html>
 
