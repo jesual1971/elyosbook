@@ -9,7 +9,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f0ff;
+      background-color: #f4f8ff;
     }
 
     .nav-bar {
@@ -31,7 +31,7 @@
       font-size: 16px;
     }
 
-    .perfil-container {
+    .profile-container {
       max-width: 1000px;
       margin: 120px auto 40px;
       padding: 20px;
@@ -40,116 +40,38 @@
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     }
 
-    .perfil-header {
+    .profile-header {
       display: flex;
       align-items: center;
       gap: 20px;
       margin-bottom: 30px;
     }
 
-    .perfil-header img {
-      width: 120px;
-      height: 120px;
+    .profile-header img {
+      width: 100px;
+      height: 100px;
       object-fit: cover;
       border-radius: 50%;
-      border: 3px solid #a287f4;
+      border: 3px solid #003f8a;
     }
 
-    .perfil-info h2 {
+    .profile-info h2 {
       margin: 0;
       font-size: 24px;
-      color: #2c3e50;
+      color: #18335f;
     }
 
-    .perfil-info p {
-      margin: 4px 0;
-      color: #555;
-    }
-
-    .form-foto {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    .camera-icon img {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
       margin-top: 10px;
     }
 
-    .form-foto input[type="file"] {
-      display: none;
-    }
-
-    .form-foto label {
-      cursor: pointer;
-    }
-
-    .form-foto img {
-      width: 28px;
-      height: 28px;
-    }
-
-    .form-foto button {
-      margin-top: 8px;
-      padding: 6px 12px;
-      background-color: #003f8a;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .bio-box {
-      margin-top: 20px;
-      background-color: #f6f4ff;
-      padding: 20px;
-      border-left: 5px solid #a287f4;
-      border-radius: 10px;
-      font-style: italic;
-      color: #333;
-    }
-
-    .solicitudes-section {
-      margin-top: 30px;
-    }
-
-    .solicitudes-section ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .solicitudes-section li {
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #f9f9ff;
-      padding: 10px;
-      border-radius: 8px;
-    }
-
-    .solicitudes-section img {
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
+    .camera-icon {
+      display: inline-block;
       margin-right: 10px;
-    }
-
-    .botones-solicitud button {
-      margin-left: 5px;
-      padding: 6px 10px;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .btn-aceptar {
-      background-color: #003f8a;
-      color: white;
-    }
-
-    .btn-rechazar {
-      background-color: #555;
-      color: white;
+      vertical-align: middle;
     }
   </style>
 </head>
@@ -160,40 +82,30 @@
     <a href="oraculo.html">Libro de Elyos</a>
     <a href="amigos.html">Amigos</a>
     <a href="comunidad.html">Comunidad</a>
-    <a href="perfil-usuario.html">Ver mi perfil</a>
+    <a href="/perfil-usuario.html">Ver mi perfil</a>
     <a href="amigos.html" style="position: relative;">
       🔔 <span id="notificacion-icono" style="display:none; position:absolute; top:-5px; right:-10px; background:red; color:white; border-radius:50%; padding:2px 6px; font-size:12px;">!</span>
     </a>
     <a href="#" onclick="cerrarSesion()">Cerrar Sesión</a>
   </div>
 
-  <div class="perfil-container">
-    <div class="perfil-header">
-      <div>
-        <img src="img/default-avatar.png" alt="Avatar" id="avatarUsuario">
+  <div class="profile-container">
+    <div class="profile-header">
+      <div class="profile-pic-box" style="position: relative; display: flex; align-items: center; gap: 10px;">
+        <img id="avatarUsuario" src="img/default-avatar.png" alt="Foto de perfil">
         <form id="formFoto" class="form-foto" enctype="multipart/form-data">
-          <label for="fotoPerfil">
+          <label for="fotoPerfil" class="camera-icon">
             <img src="img/camara.png" alt="Subir foto">
           </label>
-          <input type="file" id="fotoPerfil" name="foto" accept="image/*" />
+          <input type="file" id="fotoPerfil" name="foto" accept="image/*" style="display: none;">
           <button type="submit">Cambiar foto</button>
         </form>
       </div>
-      <div class="perfil-info">
+      <div class="profile-info">
         <h2 id="nombreUsuario">Cargando...</h2>
         <p id="fechaMiembro">Miembro desde: ...</p>
+        <ul id="solicitudes-lista" style="list-style: none; padding: 0;"></ul>
       </div>
-    </div>
-
-    <div class="bio-box" id="bioUsuario">
-      “La luz de Elyos habita en aquellos que buscan con el corazón despierto...”
-    </div>
-
-    <div class="solicitudes-section">
-      <h3>Solicitudes de Amistad</h3>
-      <ul id="solicitudes-lista">
-        <li>No tienes solicitudes pendientes.</li>
-      </ul>
     </div>
   </div>
 
@@ -201,92 +113,108 @@
   <span id="notificacion-icono" style="display:none; color: yellow;">🔔</span>
 
   <script>
-  const miUsuario = localStorage.getItem("usuario");
-  let ultimaCantidad = 0;
+    async function cargarDatosPerfil() {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("/api/mi-perfil", {
+          headers: {
+            Authorization: "Bearer " + token
+          }
+        });
+        const data = await res.json();
 
-  async function revisarMensajesNuevos() {
-    try {
-      const res = await fetch(`/api/mensajesPrivados/nuevos/${miUsuario}`);
-      const data = await res.json();
+        if (res.ok) {
+          document.getElementById("nombreUsuario").textContent = data.usuario || "Usuario";
 
-      const icono = document.getElementById("notificacion-icono");
+          if (data.avatar) {
+            document.getElementById("avatarUsuario").src = data.avatar + "?" + Date.now();
+          }
 
-      if (data.nuevos > 0) {
-        if (icono) icono.style.display = "inline";
-
-        // Si hay más mensajes que antes, reproducir sonido
-        if (data.nuevos > ultimaCantidad) {
-          const sonido = document.getElementById("sonidoMensaje");
-          sonido.play().catch(() => {});
+          if (data.creadoEn) {
+            const fecha = new Date(data.creadoEn);
+            const opciones = { year: "numeric", month: "long" };
+            const fechaFormateada = fecha.toLocaleDateString("es-ES", opciones);
+            document.getElementById("fechaMiembro").textContent = "Miembro desde: " + fechaFormateada;
+          }
         }
-
-        ultimaCantidad = data.nuevos;
-      } else {
-        if (icono) icono.style.display = "none";
-        ultimaCantidad = 0;
+      } catch (error) {
+        console.error("Error al cargar perfil:", error);
       }
-    } catch (err) {
-      console.error("❌ Error revisando mensajes nuevos:", err);
-    }
-  }
-
-  setInterval(revisarMensajesNuevos, 10000); // cada 10s
-
-  // Para redirigir si hacen clic en la campana
-  document.getElementById("notificacion-icono").addEventListener("click", () => {
-    document.getElementById("notificacion-icono").style.display = "none";
-    window.location.href = "amigos.html";
-  });
-</script>
-<script>
-  async function cargarDatosPerfil() {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("⛔ No hay token de sesión");
-      return;
     }
 
-    const res = await fetch("/api/mi-perfil", {
-      headers: { Authorization: "Bearer " + token }
+    document.getElementById("formFoto").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const archivo = document.getElementById("fotoPerfil").files[0];
+      if (!archivo) {
+        alert("Por favor selecciona una imagen.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("foto", archivo);
+
+      try {
+        const res = await fetch("/perfil/foto", {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token")
+          },
+          body: formData
+        });
+
+        if (res.ok) {
+          const resultado = await res.json();
+          document.getElementById("avatarUsuario").src = resultado.avatar + "?" + Date.now();
+          alert("Foto actualizada correctamente");
+        } else {
+          alert("Error al subir la imagen");
+        }
+      } catch (err) {
+        console.error("Error al subir imagen:", err);
+        alert("Ocurrió un error al subir la foto");
+      }
     });
 
-    const data = await res.json();
-    console.log("📦 Datos perfil:", data); // 👈 Útil para debug
+    const miUsuario = localStorage.getItem("usuario");
+    let ultimaCantidad = 0;
 
-    if (!res.ok) {
-      console.error("⚠️ No se pudo cargar el perfil:", data?.mensaje || res.statusText);
-      return;
+    async function revisarMensajesNuevos() {
+      try {
+        const res = await fetch(`/api/mensajesPrivados/nuevos/${miUsuario}`);
+        const data = await res.json();
+
+        const icono = document.getElementById("notificacion-icono");
+        if (data.nuevos > 0) {
+          icono.style.display = "inline";
+          if (data.nuevos > ultimaCantidad) {
+            const sonido = document.getElementById("sonidoMensaje");
+            sonido.play().catch(() => {});
+          }
+          ultimaCantidad = data.nuevos;
+        } else {
+          icono.style.display = "none";
+          ultimaCantidad = 0;
+        }
+      } catch (err) {
+        console.error("Error revisando mensajes nuevos:", err);
+      }
     }
 
-    // ✅ Nombre
-    document.getElementById("nombreUsuario").textContent = data.usuario || "Usuario";
+    setInterval(revisarMensajesNuevos, 10000);
+    document.getElementById("notificacion-icono").addEventListener("click", () => {
+      document.getElementById("notificacion-icono").style.display = "none";
+      window.location.href = "amigos.html";
+    });
 
-    // ✅ Fecha
-    if (data.creadoEn) {
-      const fecha = new Date(data.creadoEn);
-      const opciones = { year: "numeric", month: "long" };
-      const fechaFormateada = fecha.toLocaleDateString("es-ES", opciones);
-      document.getElementById("fechaMiembro").textContent =
-        "Miembro desde: " + fechaFormateada;
+    function cerrarSesion() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.href = "index.html";
     }
 
-    // ✅ Avatar
-    const avatarImg = document.getElementById("avatarUsuario");
-    if (data.avatar) {
-      avatarImg.src = data.avatar + "?" + Date.now(); // Forzar refresco
-      avatarImg.onerror = () => {
-        avatarImg.src = "img/default-avatar.png";
-      };
-    } else {
-      avatarImg.src = "img/default-avatar.png";
-    }
-  } catch (err) {
-    console.error("❌ Error al cargar perfil:", err);
-  }
-}
-
-  document.addEventListener("DOMContentLoaded", cargarDatosPerfil);
-</script>
+    document.addEventListener("DOMContentLoaded", cargarDatosPerfil);
+  </script>
 </body>
 </html>
+
