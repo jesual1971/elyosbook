@@ -73,6 +73,27 @@
       margin-right: 10px;
       vertical-align: middle;
     }
+
+    .perfil-tabs {
+      margin-top: 30px;
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .perfil-tabs button {
+      background-color: #003f8a;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .perfil-tabs button:hover {
+      background-color: #002f6c;
+    }
   </style>
 </head>
 <body>
@@ -82,7 +103,7 @@
     <a href="oraculo.html">Libro de Elyos</a>
     <a href="amigos.html">Amigos</a>
     <a href="comunidad.html">Comunidad</a>
-    <a href="/perfil-usuario.html">Ver mi perfil</a>
+    <a href="perfil-usuario.html">Ver mi perfil</a>
     <a href="amigos.html" style="position: relative;">
       🔔 <span id="notificacion-icono" style="display:none; position:absolute; top:-5px; right:-10px; background:red; color:white; border-radius:50%; padding:2px 6px; font-size:12px;">!</span>
     </a>
@@ -106,6 +127,12 @@
         <p id="fechaMiembro">Miembro desde: ...</p>
         <ul id="solicitudes-lista" style="list-style: none; padding: 0;"></ul>
       </div>
+    </div>
+
+    <div class="perfil-tabs">
+      <button onclick="mostrarSeccion('fotos')">📁 Mis Fotos</button>
+      <button onclick="mostrarSeccion('videos')">🎥 Mis Videos</button>
+      <button onclick="mostrarSeccion('info')">ℹ️ Información</button>
     </div>
   </div>
 
@@ -213,8 +240,13 @@
       window.location.href = "index.html";
     }
 
+    function mostrarSeccion(nombre) {
+      alert(`Sección: ${nombre}`); // Esto es solo para mostrar el clic
+    }
+
     document.addEventListener("DOMContentLoaded", cargarDatosPerfil);
   </script>
 </body>
 </html>
+
 
