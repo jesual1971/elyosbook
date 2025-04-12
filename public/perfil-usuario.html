@@ -203,5 +203,43 @@
   <script>
     // Aquí siguen los scripts existentes
   </script>
+  <script>
+  const miUsuario = localStorage.getItem("usuario");
+  let ultimaCantidad = 0;
+
+  async function revisarMensajesNuevos() {
+    try {
+      const res = await fetch(`/api/mensajesPrivados/nuevos/${miUsuario}`);
+      const data = await res.json();
+
+      const icono = document.getElementById("notificacion-icono");
+
+      if (data.nuevos > 0) {
+        if (icono) icono.style.display = "inline";
+
+        // Si hay más mensajes que antes, reproducir sonido
+        if (data.nuevos > ultimaCantidad) {
+          const sonido = document.getElementById("sonidoMensaje");
+          sonido.play().catch(() => {});
+        }
+
+        ultimaCantidad = data.nuevos;
+      } else {
+        if (icono) icono.style.display = "none";
+        ultimaCantidad = 0;
+      }
+    } catch (err) {
+      console.error("❌ Error revisando mensajes nuevos:", err);
+    }
+  }
+
+  setInterval(revisarMensajesNuevos, 10000); // cada 10s
+
+  // Para redirigir si hacen clic en la campana
+  document.getElementById("notificacion-icono").addEventListener("click", () => {
+    document.getElementById("notificacion-icono").style.display = "none";
+    window.location.href = "amigos.html";
+  });
+</script>
 </body>
 </html>
