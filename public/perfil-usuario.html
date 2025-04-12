@@ -257,11 +257,15 @@
         }
 
         if (data.avatar) {
-          document.getElementById("avatarUsuario").src = data.avatar + "?" + Date.now(); // forzar refresco
-        }
-      } else {
-        console.error("No se pudo cargar perfil:", data);
-      }
+  const avatarImg = document.getElementById("avatarUsuario");
+  avatarImg.src = data.avatar + "?" + Date.now(); // mantener el forzado de refresco
+
+  avatarImg.onerror = () => {
+    avatarImg.src = "img/default-avatar.png";
+  };
+} else {
+  document.getElementById("avatarUsuario").src = "img/default-avatar.png";
+}
     } catch (err) {
       console.error("❌ Error al cargar perfil:", err);
     }
