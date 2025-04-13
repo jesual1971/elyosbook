@@ -106,6 +106,13 @@
 <body>
 
 <header style="background-color: #1c2d44; padding: 12px 20px; display: flex; justify-content: flex-end; align-items: center; position: fixed; top: 0; width: 100%; z-index: 999;">
+<!-- Selector de idioma -->
+<div style="position: absolute; top: 12px; right: 180px;">
+  <select id="languageSelect" onchange="cambiarIdioma()" style="padding: 9px 12px; border-radius: 5px; border: none; background-color: #003f8a; color: white; font-weight: bold;">
+    <option value="es">🇪🇸 Español</option>
+    <option value="en">🇺🇸 English</option>
+  </select>
+</div>
 <button id="abrirSidebar" style="position: fixed; top: 15px; left: 20px; background-color: #003f8a; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; z-index: 1001;">
   🌟 Más
 </button>
@@ -238,7 +245,17 @@
     }
   });
 </script>
-
+<script>
+  function cambiarIdioma() {
+    const idioma = document.getElementById("languageSelect").value;
+    if (idioma === "en") {
+      alert("English version is coming soon 🌍");
+      // En el futuro puedes redirigir: window.location.href = "/en/index.html";
+    } else {
+      alert("Ya estás viendo la versión en español 🌞");
+    }
+  }
+</script>
 </body>
 </html>
 
