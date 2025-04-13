@@ -132,6 +132,19 @@
       window.location.href = "index.html";
     }
   </script>
+  <script>
+  // Verifica si el usuario ha comprado el libro
+  const libroComprado = localStorage.getItem("libroComprado");
+
+  if (!libroComprado || libroComprado !== "true") {
+    alert("🔒 Debes comprar el libro para acceder a esta sección.");
+    window.location.href = "comprar-libro.html";
+  }
+</script>
+<script>
+  // Guardar en localStorage que el libro fue comprado
+  localStorage.setItem("libroComprado", "true");
+</script>
 </body>
 </html>
 
