@@ -17,6 +17,30 @@
       hostedButtonId: "ENAPNGZEJ7Q7J",
     }).render("#paypal-container-ENAPNGZEJ7Q7J");
   </script>
+  <hr style="margin: 40px 0; border: 1px solid #ccc;">
+
+<h2>También puedes comprarlo por Nequi o Daviplata</h2>
+<p>Si estás en Colombia y prefieres usar estos métodos:</p>
+
+<div style="margin: 20px auto; max-width: 400px; text-align: left;">
+  <p><strong>📲 Nequi:</strong> <span id="nequiNumLibro">3001234567</span>
+    <button onclick="copiarTexto('nequiNumLibro')" style="margin-left: 8px;">📋 Copiar</button>
+  </p>
+  <p><strong>🏦 Daviplata:</strong> <span id="daviNumLibro">3049876543</span>
+    <button onclick="copiarTexto('daviNumLibro')" style="margin-left: 8px;">📋 Copiar</button>
+  </p>
+
+  <button onclick="window.location.href='gracias.html'" style="margin-top: 20px; background-color: #27ae60; color: white; padding: 12px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">✅ Ya realicé el pago</button>
+</div>
+
+<script>
+  function copiarTexto(id) {
+    const texto = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(texto).then(() => {
+      alert("Número copiado al portapapeles.");
+    });
+  }
+</script>
 
   <p style="margin-top: 20px;">Después de completar la compra, serás redirigido a una página de agradecimiento.</p>
 </body>
