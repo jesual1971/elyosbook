@@ -214,7 +214,7 @@ async function enviarSolicitud(destinatario) {
     if (!texto) return;
 
     try {
-      const res = await fetch(`/buscarAmigos?nombre=${texto}`);
+      const res = await fetch(`/buscarAmigos?query=${encodeURIComponent(texto)}`);
       const usuarios = await res.json();
 
       const contenedor = document.getElementById("resultados-busqueda");

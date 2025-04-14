@@ -252,12 +252,12 @@ Habla como el Todo. No como una máquina.
 // 🧑‍🤝‍🧑 Buscar amigos
 app.get("/buscarAmigos", async (req, res) => {
   try {
-    const { nombre } = req.query;
-    if (!nombre) {
+    const { query } = req.query;
+    if (!query) {
       return res.status(400).json({ mensaje: "Debes escribir un nombre." });
     }
 
-    const regex = new RegExp(nombre, "i");
+    const regex = new RegExp(query, "i");
     const amigos = await Usuario.find({
       $or: [
         { nombre: regex },
