@@ -119,6 +119,8 @@
     </div>
 
     <h2>Amigos actuales</h2>
+    <h2>Solicitudes de amistad</h2>
+    <div id="lista-solicitudes"></div>
     <div id="lista-amigos"></div>
 
     <h2>Resultados de búsqueda</h2>
@@ -257,20 +259,83 @@ async function enviarSolicitud(destinatario) {
     }
   }
 
-  document.addEventListener("DOMContentLoaded", cargarAmigos);
-</script>
-  <script>
-  function verImagen(ruta) {
-    const ventana = window.open("", "_blank");
-    ventana.document.write(`<img src="${ruta}" style="max-width:100%; max-height:100vh;">`);
+  document.addEventListener("DOMContentLoaded", () => {
+  cargarAmigos();
+  cargarSolicitudes();
+});
+
+  async function cargarSolicitudes() {
+  const token = localStorage.getItem("token");
+
+  try {
+    const res = await fetch("/api/mi-perfil", {
+      headers: { Authorization: "Bearer " + token }
+    });
+    const data = await res.json();
+    const solicitudes = data.solicitudes || [];
+
+    const contenedor = document.getElementById("lista-solicitudes");
+    contenedor.innerHTML = "";
+
+    if (solicitudes.length === 0) {
+      contenedor.innerHTML = "<p>No tienes solicitudes pendientes.</p>";
+      return;
+    }
+
+    solicitudes.forEach(usuario => {
+      const div = document.createElement("div");
+      div.classList.add("user-card");
+      div.innerHTML = `
+        <img src="${usuario.avatar || 'img/default-avatar.png'}" alt="Avatar">
+        <div class="user-info">
+          <strong>${usuario.nombre}</strong><br>
+          <small>@${usuario.usuario}</small>
+        </div>
+        <div class="user-actions">
+          <button onclick="aceptarSolicitud('${usuario._id}')">Aceptar</button>
+          <button onclick="rechazarSolicitud('${usuario._id}')">Rechazar</button>
+        </div>
+      `;
+      contenedor.appendChild(div);
+    });
+  } catch (err) {
+    console.error("❌ Error cargando solicitudes:", err);
   }
-  function verPerfil(usuario) {
-  window.location.href = `perfil-amigo.html?usuario=${usuario}`;
 }
 
-function ampliarAvatar(url) {
-  window.open(url, "_blank");
+async function aceptarSolicitud(idAmigo) {
+  try {
+    const res = await fetch(`/api/usuarios/${usuario}/aceptar-amigo`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idAmigo })
+    });
+
+    const data = await res.json();
+    alert(data.mensaje || "Amigo agregado");
+    cargarAmigos();
+    cargarSolicitudes();
+  } catch (err) {
+    console.error("❌ Error aceptando solicitud:", err);
+  }
 }
+
+async function rechazarSolicitud(idAmigo) {
+  try {
+    const res = await fetch(`/api/usuarios/${usuario}/rechazar-solicitud`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: idAmigo })
+    });
+
+    const data = await res.json();
+    alert(data.mensaje || "Solicitud rechazada");
+    cargarSolicitudes();
+  } catch (err) {
+    console.error("❌ Error rechazando solicitud:", err);
+  }
+}
+
 </script>
 <script>
   async function verificarMensajesNoLeidos() {
