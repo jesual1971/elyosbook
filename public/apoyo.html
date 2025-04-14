@@ -8,16 +8,42 @@
   </script>
 </head>
 <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 40px; text-align: center;">
+  
   <h1>💖 Apoya este Santuario Digital</h1>
   <p>Gracias por considerar una contribución. Con tu ayuda, ElyosBook seguirá iluminando corazones sin publicidad ni venta de datos.</p>
 
-  <div id="paypal-container-RYAUQN93LXZKN" style="margin-top: 30px;"></div>
+  <h2>🌍 Desde cualquier parte del mundo</h2>
+  <div id="paypal-container-RYAUQN93LXZKN" style="margin: 30px auto;"></div>
   <script>
     paypal.HostedButtons({
       hostedButtonId: "RYAUQN93LXZKN",
     }).render("#paypal-container-RYAUQN93LXZKN");
   </script>
 
-  <p style="margin-top: 20px;">Después de donar, serás redirigido a una página de agradecimiento especial.</p>
+  <h2>🇨🇴 Desde Colombia</h2>
+  <p style="margin-bottom: 10px;">Puedes hacer tu aporte a través de:</p>
+
+  <div style="margin-bottom: 20px;">
+    <strong>Nequi:</strong> <span id="nequiNumero">3189500740</span>
+    <button onclick="copiarNumero('nequiNumero')" style="margin-left: 10px; padding: 5px 10px; font-size: 14px;">📋 Copiar</button>
+  </div>
+
+  <div style="margin-bottom: 20px;">
+    <strong>Daviplata:</strong> <span id="daviNumero">3189500740</span>
+    <button onclick="copiarNumero('daviNumero')" style="margin-left: 10px; padding: 5px 10px; font-size: 14px;">📋 Copiar</button>
+  </div>
+
+  <p style="margin-top: 30px; font-size: 14px; color: #555;">Después de donar, serás redirigido a una página de agradecimiento especial.</p>
+
+  <script>
+    function copiarNumero(idElemento) {
+      const texto = document.getElementById(idElemento).textContent;
+      navigator.clipboard.writeText(texto).then(() => {
+        alert("Número copiado: " + texto);
+      });
+    }
+  </script>
+
 </body>
 </html>
+
