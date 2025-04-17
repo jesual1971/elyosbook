@@ -133,10 +133,11 @@
     }
   </script>
   <script>
-  // Verifica si el usuario ha comprado el libro
   const libroComprado = localStorage.getItem("libroComprado");
+  const usuario = localStorage.getItem("usuario");
 
-  if (!libroComprado || libroComprado !== "true") {
+  // Si el usuario NO es el administrador y NO ha comprado el libro, lo redirige
+  if (usuario !== "Anezje71" && (!libroComprado || libroComprado !== "true")) {
     alert("🔒 Debes comprar el libro para acceder a esta sección.");
     window.location.href = "comprar-libro.html";
   }
