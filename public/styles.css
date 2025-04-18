@@ -324,3 +324,49 @@ h1 {
   }
 }
 
+/* ===== Ajustes finos para pantallas ultra pequeñas (teléfonos verticales) ===== */
+@media (max-width: 400px) {
+  .oraculo-container,
+  .registro-box,
+  .container {
+    padding: 10px;
+    width: 95%;
+  }
+
+  h1, h2, h3 {
+    font-size: 1.1em;
+    margin: 10px 0;
+  }
+
+  p {
+    font-size: 0.95em;
+  }
+
+  .menu-btn,
+  #abrirSidebar {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+
+  select#languageSelect {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+
+  .menu-options {
+    font-size: 14px;
+    width: 95%;
+    right: 0;
+    left: 2.5%;
+  }
+
+  .user-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .user-actions button {
+    margin: 5px 0;
+    width: 100%;
+  }
+}
