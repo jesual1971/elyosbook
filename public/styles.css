@@ -283,3 +283,44 @@ h1 {
   margin-bottom: 10px;
 }
 
+/* ===== Estilos Responsivos para pantallas pequeñas ===== */
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  h1, h2, h3 {
+    font-size: 1.3em;
+    text-align: center;
+  }
+
+  p {
+    font-size: 1em;
+    line-height: 1.6;
+  }
+
+  button {
+    width: 100%;
+    font-size: 1em;
+    padding: 12px;
+  }
+
+  .registro-box,
+  .oraculo-container,
+  .container {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .menu-options {
+    width: 100%;
+    right: 0;
+    left: 0;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
