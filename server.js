@@ -877,6 +877,22 @@ server.listen(PORT, () => {
 });
 
 io.on("connection", (socket) => {
+    socket.on("llamada-iniciada", ({ to, from }) => {
+    socket.broadcast.emit("llamada-iniciada", { to, from });
+  });
+
+  socket.on("oferta", ({ to, from, offer }) => {
+    socket.broadcast.emit("oferta", { to, from, offer });
+  });
+
+  socket.on("respuesta", ({ to, from, answer }) => {
+    socket.broadcast.emit("respuesta", { to, from, answer });
+  });
+
+  socket.on("ice-candidate", ({ to, from, candidate }) => {
+    socket.broadcast.emit("ice-candidate", { to, from, candidate });
+  });
+
   console.log("🟣 Usuario conectado al chat");
 
   socket.on("mensaje", async ({ autor, contenido }) => {

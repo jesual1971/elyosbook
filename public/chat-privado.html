@@ -118,6 +118,16 @@
   </div>
 
   <div class="chat-container">
+  <!-- 🎙️ Llamadas de Voz -->
+<div class="llamada-container" style="text-align:center; margin-top: 20px;">
+  <button id="iniciarLlamada" style="padding:10px 20px; background:#f1c40f; color:#0e1a2b; font-weight:bold; border:none; border-radius:6px; cursor:pointer;">
+    📞 Iniciar llamada
+  </button>
+  <p id="estadoLlamada" style="margin-top: 10px;"></p>
+</div>
+
+<audio id="audioRemoto" autoplay></audio>
+
     <h2>Chat con <span id="destinatarioNombre">...</span></h2>
 
     <div class="chat-log" id="chatLog">
@@ -312,6 +322,93 @@ function quitarImagen() {
   previewImagen.style.display = "none";
 }
 </script>
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+  const socket = io(); // 🔁 Ya tienes esto en server.js
+  const iniciarBtn = document.getElementById("iniciarLlamada");
+  const estadoLlamada = document.getElementById("estadoLlamada");
+  const audioRemoto = document.getElementById("audioRemoto");
+
+  let peerConnection;
+  const config = {
+    iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+  };
+
+  iniciarBtn.addEventListener("click", async () => {
+    iniciarBtn.disabled = true;
+    estadoLlamada.textContent = "🔄 Llamando a " + destinatario + "...";
+    await iniciarLlamada();
+  });
+
+  async function iniciarLlamada() {
+    peerConnection = new RTCPeerConnection(config);
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+
+    peerConnection.ontrack = (event) => {
+      audioRemoto.srcObject = event.streams[0];
+    };
+
+    peerConnection.onicecandidate = (event) => {
+      if (event.candidate) {
+        socket.emit("ice-candidate", {
+          to: destinatario,
+          from: emisor,
+          candidate: event.candidate
+        });
+      }
+    };
+
+    socket.emit("llamada-iniciada", { to: destinatario, from: emisor });
+
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    socket.emit("oferta", { to: destinatario, from: emisor, offer });
+  }
+
+  socket.on("oferta", async ({ from, offer }) => {
+    if (from === destinatario) {
+      peerConnection = new RTCPeerConnection(config);
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+
+      peerConnection.ontrack = (event) => {
+        audioRemoto.srcObject = event.streams[0];
+      };
+
+      peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit("ice-candidate", {
+            to: from,
+            from: emisor,
+            candidate: event.candidate
+          });
+        }
+      };
+
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+      socket.emit("respuesta", { to: from, from: emisor, answer });
+
+      estadoLlamada.textContent = "📞 En llamada con " + from;
+    }
+  });
+
+  socket.on("respuesta", async ({ from, answer }) => {
+    if (from === destinatario) {
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+      estadoLlamada.textContent = "📞 En llamada con " + from;
+    }
+  });
+
+  socket.on("ice-candidate", async ({ candidate }) => {
+    if (peerConnection) {
+      await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+    }
+  });
+</script>
+
 </body>
 <!-- Emoji Button Library -->
 </html>
