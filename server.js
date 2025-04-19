@@ -71,6 +71,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
+// 👉 Servir imágenes subidas desde /uploads
+app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
+
 const almacenamientoImagenes = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "public/uploads/");
