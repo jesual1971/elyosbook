@@ -893,6 +893,26 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("ice-candidate", { to, from, candidate });
   });
 
+    socket.on("llamada", ({ de, para }) => {
+    io.emit("llamada", { de, para });
+  });
+
+  socket.on("aceptarLlamada", ({ de, para }) => {
+    io.emit("llamadaAceptada", { de, para });
+  });
+
+  socket.on("rechazarLlamada", ({ de, para }) => {
+    io.emit("llamadaRechazada", { de, para });
+  });
+
+  socket.on("finalizarLlamada", ({ de, para }) => {
+    io.emit("llamadaFinalizada", { de, para });
+  });
+
+  socket.on("ocupado", ({ para }) => {
+    io.emit("usuarioOcupado", { para });
+  });
+
   console.log("🟣 Usuario conectado al chat");
 
   socket.on("mensaje", async ({ autor, contenido }) => {

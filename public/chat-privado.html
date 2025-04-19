@@ -130,6 +130,21 @@
 
     <h2>Chat con <span id="destinatarioNombre">...</span></h2>
 
+    <div id="llamadaEstado" style="margin-bottom: 15px;"></div>
+
+<!-- 🔔 Ventana de llamada entrante -->
+<div id="ventanaLlamadaEntrante" style="display:none; background: #1c2d44; border-radius:10px; padding:15px; text-align:center; margin-bottom:20px;">
+  <h3 style="color: #f1c40f;">📞 Llamada entrante de <span id="nombreLlamador"></span></h3>
+  <button onclick="aceptarLlamada()">✅ Aceptar</button>
+  <button onclick="rechazarLlamada()">❌ Rechazar</button>
+</div>
+
+<!-- 🎙️ Botón de llamada -->
+<button id="btnLlamar" onclick="iniciarLlamada()" style="margin-bottom: 20px;">📞 Iniciar llamada</button>
+
+<!-- ❌ Finalizar -->
+<button id="btnFinalizar" onclick="finalizarLlamada()" style="margin-bottom: 20px; display:none;">❌ Finalizar llamada</button>
+
     <div class="chat-log" id="chatLog">
       <!-- Mensajes aquí -->
     </div>
@@ -407,6 +422,77 @@ function quitarImagen() {
       await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
     }
   });
+</script>
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+const socket = io(); // 👈 Conecta con server.js
+let enLlamada = false;
+let llamadaEnCursoCon = null;
+
+// ✅ Llamar a otro usuario
+function iniciarLlamada() {
+  if (!destinatario || !emisor) return;
+  socket.emit("llamada", { de: emisor, para: destinatario });
+  document.getElementById("llamadaEstado").innerText = `📞 Llamando a ${destinatario}...`;
+}
+
+// ✅ Recibir llamada
+socket.on("llamada", ({ de }) => {
+  if (enLlamada) return socket.emit("ocupado", { para: de });
+  llamadaEnCursoCon = de;
+  document.getElementById("ventanaLlamadaEntrante").style.display = "block";
+  document.getElementById("nombreLlamador").innerText = de;
+});
+
+// ✅ Aceptar llamada
+function aceptarLlamada() {
+  if (!llamadaEnCursoCon) return;
+  socket.emit("aceptarLlamada", { de: emisor, para: llamadaEnCursoCon });
+  document.getElementById("ventanaLlamadaEntrante").style.display = "none";
+  document.getElementById("llamadaEstado").innerText = `🔊 En llamada con ${llamadaEnCursoCon}`;
+  document.getElementById("btnFinalizar").style.display = "inline-block";
+  enLlamada = true;
+}
+
+// ✅ Rechazar llamada
+function rechazarLlamada() {
+  if (!llamadaEnCursoCon) return;
+  socket.emit("rechazarLlamada", { de: emisor, para: llamadaEnCursoCon });
+  document.getElementById("ventanaLlamadaEntrante").style.display = "none";
+  llamadaEnCursoCon = null;
+}
+
+// ✅ Cuando me aceptan
+socket.on("llamadaAceptada", ({ de }) => {
+  document.getElementById("llamadaEstado").innerText = `🔊 En llamada con ${de}`;
+  document.getElementById("btnFinalizar").style.display = "inline-block";
+  enLlamada = true;
+});
+
+// ✅ Cuando me rechazan
+socket.on("llamadaRechazada", ({ de }) => {
+  document.getElementById("llamadaEstado").innerText = `❌ ${de} rechazó tu llamada.`;
+  setTimeout(() => {
+    document.getElementById("llamadaEstado").innerText = "";
+  }, 4000);
+});
+
+// ✅ Finalizar llamada
+function finalizarLlamada() {
+  socket.emit("finalizarLlamada", { de: emisor, para: llamadaEnCursoCon });
+  document.getElementById("llamadaEstado").innerText = `🛑 Llamada finalizada`;
+  document.getElementById("btnFinalizar").style.display = "none";
+  enLlamada = false;
+  llamadaEnCursoCon = null;
+}
+
+// ✅ Cuando el otro finaliza
+socket.on("llamadaFinalizada", ({ de }) => {
+  document.getElementById("llamadaEstado").innerText = `🛑 ${de} finalizó la llamada.`;
+  document.getElementById("btnFinalizar").style.display = "none";
+  enLlamada = false;
+  llamadaEnCursoCon = null;
+});
 </script>
 
 </body>
