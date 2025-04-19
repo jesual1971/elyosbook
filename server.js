@@ -654,19 +654,6 @@ app.get("/api/mensajes", async (req, res) => {
   }
 });
 
-// Enviar mensaje privado
-app.post("/api/mensajesPrivados", async (req, res) => {
-  try {
-    const { emisor, receptor, contenido } = req.body;
-    const mensaje = new MensajePrivado({ emisor, receptor, contenido });
-    await mensaje.save();
-    res.status(201).json({ mensaje: "Mensaje enviado" });
-  } catch (error) {
-    console.error("❌ Error al enviar mensaje privado:", error);
-    res.status(500).json({ mensaje: "Error al enviar el mensaje" });
-  }
-});
-
 // ✅ Obtener cantidad de mensajes no leídos para un usuario
 app.get("/api/mensajesPrivados/no-leidos/:usuario", async (req, res) => {
   try {
